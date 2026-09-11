@@ -1,0 +1,39 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "communist-activity-web",
+  "compatibility_date": "2026-07-24",
+  "routes": [
+    {
+      "pattern": "community.crito.top/*",
+      "zone_name": "crito.top"
+    }
+  ],
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS"
+  },
+  "vars": {
+    "ACTIVITY_STORAGE": "directus",
+    "DIRECTUS_URL": "https://directus.crito.top",
+    "DIRECTUS_EVENTS_COLLECTION": "submitted_events",
+    "DIRECTUS_SUBSCRIPTIONS_COLLECTION": "event_subscriptions",
+    "DIRECTUS_ORGANIZER_CONTACTS_COLLECTION": "organizer_contact_cards",
+    "DEFAULT_ORGANIZER_QR_IMAGE_URL": "https://community.crito.top/r2/organizers/rongyu-wechat-qr.png"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "ACTIVITY_KV",
+      "id": "a8f2262f00fc4d71bee8114afcc48293",
+      "preview_id": "2f6acfa49d33483c88cb4b49becfa2e6"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "PUBLIC_ASSETS",
+      "bucket_name": "communist-public-assets"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}

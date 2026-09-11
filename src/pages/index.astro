@@ -6,7 +6,6 @@ import {
   Building2,
   CalendarDays,
   Check,
-  Clock,
   Database,
   MapPin,
   MessageCircle,
@@ -17,20 +16,11 @@ import {
   Sparkles,
   Users
 } from "@lucide/astro";
-import {
-  activity,
-  community,
-  nearby,
-  partners,
-  topics,
-  venue
-} from "../data/content";
+import { activity, community, partners, topics, venue } from "../data/content";
+import { eventCards } from "../data/events";
 
-const formatter = new Intl.DateTimeFormat("zh-CN", {
-  dateStyle: "full",
-  timeZone: "Asia/Shanghai"
-});
-const dateLabel = formatter.format(new Date(`${activity.startDate}T00:00:00+08:00`));
+const featuredEvent = eventCards[0];
+const activityIndex: typeof eventCards = [];
 ---
 
 <!doctype html>
@@ -40,50 +30,50 @@ const dateLabel = formatter.format(new Date(`${activity.startDate}T00:00:00+08:0
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Directus + MCP 城市活动展示页，面向中国境内部署的 Luma 风格活动站点。"
+      content="绒屿深圳地区读书会沙龙展示页，支持活动展示、报名、后台动态写入和 AI 工具接口。"
     />
     <title>{activity.title}</title>
   </head>
   <body>
     <main>
       <section class="hero">
-        <img src={activity.cover} alt="活动现场圆桌讨论" />
+        <img src={activity.cover} alt="深圳地区读书会沙龙现场" />
         <div class="heroShade"></div>
         <nav class="topbar" aria-label="主导航">
           <a href="/" class="brand"><Activity size={20} />{community.name}</a>
           <div class="navlinks">
+            <a href="#events">活动</a>
             <a href="#topics">话题</a>
-            <a href="#venue">地址</a>
-            <a href="#community">社区</a>
+            <a href="/events">Events</a>
+            <a href="/a2a">A2A</a>
           </div>
         </nav>
         <div class="heroInner">
-          <p class="eyebrow"><Sparkles size={16} />{activity.status}</p>
-          <h1>{activity.title}</h1>
+          <p class="eyebrow"><Sparkles size={16} />{activity.status}：{activity.title}</p>
+          <h1>{community.name}</h1>
           <p class="subtitle">{activity.subtitle}</p>
           <div class="heroMeta" aria-label="活动概要">
-            <span><CalendarDays size={18} />{dateLabel}</span>
-            <span><Clock size={18} />{activity.startTime} - {activity.endTime}</span>
-            <span><MapPin size={18} />{venue.city} · {venue.district}</span>
+            <span><CalendarDays size={18} />深圳地区的读书会沙龙</span>
+            <span><MapPin size={18} />地区信息：{venue.city}</span>
           </div>
           <div class="actions">
-            <a class="primary" href={`mailto:${community.contact.email}?subject=${encodeURIComponent(activity.title)}`}>
-              预约席位
+            <a class="primary" href={`/events/${featuredEvent.slug}`}>
+              查看 Coffee Chat
               <ArrowUpRight size={18} />
             </a>
-            <a class="secondary" href="#mcp">查看 AI 接入</a>
+            <a class="secondary" href="/events">进入 Events</a>
           </div>
         </div>
       </section>
 
       <section class="summaryBand">
         <div>
-          <strong>{activity.price}</strong>
-          <span>报名方式</span>
+          <strong>{activityIndex.length} 个活动</strong>
+          <span>活动索引</span>
         </div>
         <div>
-          <strong>{activity.capacity} 人</strong>
-          <span>计划容量</span>
+          <strong>{activity.price}</strong>
+          <span>深圳地区的读书会沙龙</span>
         </div>
         <div>
           <strong>{activity.hosts.join(" / ")}</strong>
@@ -93,6 +83,32 @@ const dateLabel = formatter.format(new Date(`${activity.startDate}T00:00:00+08:0
 
       <section class="contentGrid">
         <div class="mainColumn">
+          <section class="section" id="events">
+            <div class="sectionHead">
+              <p>Events</p>
+              <h2>活动索引</h2>
+            </div>
+            <div class="topicList">
+              {activityIndex.map((event) => (
+                <article class="topicCard">
+                  <div class="topicIcon"><CalendarDays size={22} /></div>
+                  <div>
+                    <h3>{event.title}</h3>
+                    <p>{event.date} · {event.time} · {event.venue}</p>
+                    <div class="referenceRow">
+                      <a href={`/events/${event.slug}`}>
+                        查看详情
+                        <ArrowUpRight size={14} />
+                      </a>
+                      <span class="eventBadge">{event.statusLabel}</span>
+                      <span class="eventBadge">{event.priceLabel}</span>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
           <section class="section" id="topics">
             <div class="sectionHead">
               <p>Topics</p>
@@ -121,13 +137,13 @@ const dateLabel = formatter.format(new Date(`${activity.startDate}T00:00:00+08:0
 
           <section class="section">
             <div class="sectionHead">
-              <p>Agenda</p>
+              <p>Process</p>
               <h2>活动流程</h2>
             </div>
             <div class="agenda">
               {activity.agenda.map((item) => (
                 <div class="agendaItem">
-                  <time>{item.time}</time>
+                  <Check size={18} />
                   <span>{item.title}</span>
                 </div>
               ))}
@@ -158,22 +174,28 @@ const dateLabel = formatter.format(new Date(`${activity.startDate}T00:00:00+08:0
 
         <aside class="sideColumn">
           <section class="panel" id="venue">
-            <h2><Building2 size={20} />场地</h2>
+            <h2><Building2 size={20} />地区信息</h2>
             <p class="venueName">{venue.name}</p>
             <p>{venue.address}</p>
             <div class="sideFact"><Route size={16} />{venue.transit}</div>
-            <div class="sideFact"><MapPin size={16} />周边资源由 {venue.mapProvider} 实时补全</div>
+            <div class="sideFact"><MapPin size={16} />地图接口：{venue.mapProvider}</div>
           </section>
 
           <section class="panel">
-            <h2><Network size={20} />周边资源</h2>
+            <h2><Network size={20} />活动入口</h2>
             <div class="nearbyList">
-              {nearby.map((item) => (
-                <div>
-                  <strong>{item.name}</strong>
-                  <span>{item.detail}</span>
-                </div>
-              ))}
+              <div>
+                <strong>列表页</strong>
+                <span><a href="/events">/events</a></span>
+              </div>
+              <div>
+                <strong>Coffee Chat</strong>
+                <span><a href={`/events/${featuredEvent.slug}`}>/events/{featuredEvent.slug}</a></span>
+              </div>
+              <div>
+                <strong>详情路由</strong>
+                <span>/events/[slug]</span>
+              </div>
             </div>
           </section>
 
@@ -257,8 +279,8 @@ const dateLabel = formatter.format(new Date(`${activity.startDate}T00:00:00+08:0
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(180deg, rgba(11, 20, 16, 0.3), rgba(11, 20, 16, 0.86)),
-      linear-gradient(90deg, rgba(11, 20, 16, 0.66), rgba(11, 20, 16, 0.08));
+      linear-gradient(180deg, rgba(12, 21, 17, 0.25), rgba(12, 21, 17, 0.88)),
+      linear-gradient(90deg, rgba(12, 21, 17, 0.68), rgba(12, 21, 17, 0.12));
   }
 
   .topbar {
@@ -484,7 +506,8 @@ const dateLabel = formatter.format(new Date(`${activity.startDate}T00:00:00+08:0
     margin-top: 14px;
   }
 
-  .referenceRow a {
+  .referenceRow a,
+  .eventBadge {
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -493,18 +516,23 @@ const dateLabel = formatter.format(new Date(`${activity.startDate}T00:00:00+08:0
     font-size: 14px;
   }
 
+  .eventBadge {
+    color: var(--muted);
+  }
+
   .agendaItem {
     display: grid;
-    grid-template-columns: 88px 1fr;
-    gap: 16px;
+    grid-template-columns: 22px 1fr;
+    gap: 14px;
     align-items: center;
     padding: 16px 0;
     border-bottom: 1px solid var(--line);
+    color: var(--ink);
+    font-weight: 700;
   }
 
-  .agendaItem time {
+  .agendaItem svg {
     color: var(--gold);
-    font-weight: 800;
   }
 
   .toolGrid {
@@ -619,8 +647,7 @@ const dateLabel = formatter.format(new Date(`${activity.startDate}T00:00:00+08:0
       font-size: 17px;
     }
 
-    .topicCard,
-    .agendaItem {
+    .topicCard {
       grid-template-columns: 1fr;
     }
   }

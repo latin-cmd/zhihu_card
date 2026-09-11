@@ -1,0 +1,126 @@
+---
+import { UsersRound } from "@lucide/astro";
+
+interface Props {
+  presentedBy: string;
+  avatar: string;
+  description: string;
+  hosts: string[];
+  attendees: number;
+  attendeeNames: string;
+}
+
+const {
+  presentedBy,
+  avatar,
+  description,
+  hosts,
+  attendees,
+  attendeeNames
+} = Astro.props;
+---
+
+<section class="organizerPanel">
+  <div class="presented">
+    <img src={avatar} alt={`Avatar for ${presentedBy}`} />
+    <div>
+      <p>Presented by</p>
+      <strong>{presentedBy}</strong>
+    </div>
+  </div>
+  <p class="description">{description}</p>
+
+  <div class="block">
+    <h2>Hosted By</h2>
+    <div class="hostList">
+      {hosts.map((host) => <span>{host}</span>)}
+    </div>
+  </div>
+
+  <div class="block">
+    <h2><UsersRound size={18} />{attendees} Went</h2>
+    <p>{attendeeNames}</p>
+  </div>
+</section>
+
+<style>
+  .organizerPanel {
+    display: grid;
+    gap: 16px;
+    padding: 20px;
+    border: 1px solid #dce3df;
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .presented {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 12px;
+    align-items: center;
+  }
+
+  img {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+
+  p {
+    margin: 0;
+    color: #68736d;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .presented p {
+    margin-bottom: 3px;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  strong {
+    color: #17211b;
+  }
+
+  .description {
+    padding-bottom: 14px;
+    border-bottom: 1px solid #dce3df;
+  }
+
+  .block {
+    display: grid;
+    gap: 10px;
+  }
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: #17211b;
+    font-size: 17px;
+    letter-spacing: 0;
+  }
+
+  .hostList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .hostList span {
+    min-height: 30px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 10px;
+    border: 1px solid #dce3df;
+    border-radius: 999px;
+    color: #17211b;
+    font-size: 14px;
+    font-weight: 750;
+  }
+
+</style>

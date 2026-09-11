@@ -1,0 +1,102 @@
+[
+  {
+    "slug": "mcp-demo-night-mryvn6ys",
+    "title": "杭州 MCP Demo Night",
+    "category": "AI",
+    "host": "城市共学会",
+    "venue": "滨江创意客厅",
+    "locationName": "滨江创意客厅",
+    "locationAddress": "杭州市滨江区江南大道 588 号 7F",
+    "date": "9月12日",
+    "time": "19:30",
+    "cover": "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1600&q=80",
+    "priceLabel": "免费预约",
+    "statusLabel": "开放报名",
+    "attendeeCount": 0,
+    "presentedBy": "城市共学会",
+    "presentedByAvatar": "https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=240&q=80",
+    "presentedByDescription": "城市共学会提交的活动。",
+    "hosts": ["城市共学会"],
+    "attendees": 0,
+    "attendeeNames": "暂时还没有参与者",
+    "registrationStatus": "开放报名",
+    "registrationNote": "这是通过 Submit Event 表单创建的本地 mock 活动。",
+    "registrationAction": "加入活动",
+    "contactLabel": "Contact the Host",
+    "about": ["围绕 Astro 页面、Directus 数据模型和 MCP 工具接入做一次小型 demo 分享。"],
+    "sections": [
+      {
+        "title": "活动详情",
+        "body": "围绕 Astro 页面、Directus 数据模型和 MCP 工具接入做一次小型 demo 分享。"
+      }
+    ],
+    "subscribeFields": ["name", "email", "wechat", "phone", "role", "company", "note"],
+    "submittedAt": "2026-07-24T11:48:53.380Z"
+  }, {
+    "slug": "mcp-demo-night-mryvn6ys",
+    "title": "杭州 MCP Demo Night",
+    "category": "AI",
+    "host": "城市共学会",
+    "venue": "滨江创意客厅",
+    "locationName": "滨江创意客厅",
+    "locationAddress": "杭州市滨江区江南大道 588 号 7F",
+    "date": "9月12日",
+    "time": "19:30",
+    "cover": "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1600&q=80",
+    "priceLabel": "免费预约",
+    "statusLabel": "开放报名",
+    "attendeeCount": 0,
+    "presentedBy": "城市共学会",
+    "presentedByAvatar": "https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=240&q=80",
+    "presentedByDescription": "城市共学会提交的活动。",
+    "hosts": ["城市共学会"],
+    "attendees": 0,
+    "attendeeNames": "暂时还没有参与者",
+    "registrationStatus": "开放报名",
+    "registrationNote": "这是通过 Submit Event 表单创建的本地 mock 活动。",
+    "registrationAction": "加入活动",
+    "contactLabel": "Contact the Host",
+    "about": ["围绕 Astro 页面、Directus 数据模型和 MCP 工具接入做一次小型 demo 分享。"],
+    "sections": [
+      {
+        "title": "活动详情",
+        "body": "围绕 Astro 页面、Directus 数据模型和 MCP 工具接入做一次小型 demo 分享。"
+      }
+    ],
+    "subscribeFields": ["name", "email", "wechat", "phone", "role", "company", "note"],
+    "submittedAt": "2026-07-24T11:48:53.380Z"
+  }, {
+    "slug": "mcp-demo-night-mryvn6ys",
+    "title": "杭州 MCP Demo Night",
+    "category": "AI",
+    "host": "城市共学会",
+    "venue": "滨江创意客厅",
+    "locationName": "滨江创意客厅",
+    "locationAddress": "杭州市滨江区江南大道 588 号 7F",
+    "date": "9月12日",
+    "time": "19:30",
+    "cover": "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1600&q=80",
+    "priceLabel": "免费预约",
+    "statusLabel": "开放报名",
+    "attendeeCount": 0,
+    "presentedBy": "城市共学会",
+    "presentedByAvatar": "https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=240&q=80",
+    "presentedByDescription": "城市共学会提交的活动。",
+    "hosts": ["城市共学会"],
+    "attendees": 0,
+    "attendeeNames": "暂时还没有参与者",
+    "registrationStatus": "开放报名",
+    "registrationNote": "这是通过 Submit Event 表单创建的本地 mock 活动。",
+    "registrationAction": "加入活动",
+    "contactLabel": "Contact the Host",
+    "about": ["围绕 Astro 页面、Directus 数据模型和 MCP 工具接入做一次小型 demo 分享。"],
+    "sections": [
+      {
+        "title": "活动详情",
+        "body": "围绕 Astro 页面、Directus 数据模型和 MCP 工具接入做一次小型 demo 分享。"
+      }
+    ],
+    "subscribeFields": ["name", "email", "wechat", "phone", "role", "company", "note"],
+    "submittedAt": "2026-07-24T11:48:53.380Z"
+  }
+]

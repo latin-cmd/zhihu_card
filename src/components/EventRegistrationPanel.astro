@@ -1,0 +1,457 @@
+---
+import { ArrowUpRight, CalendarDays, Clock, Ticket, X } from "@lucide/astro";
+
+interface Props {
+  eventSlug: string;
+  eventTitle: string;
+  category: string;
+  venue: string;
+  date: string;
+  time: string;
+  status: string;
+  note: string;
+  action: string;
+  priceLabel?: string;
+}
+
+const {
+  eventSlug,
+  eventTitle,
+  category,
+  venue,
+  date,
+  time,
+  status,
+  note,
+  action,
+  priceLabel
+} = Astro.props;
+const dialogId = `join-${eventSlug}`;
+---
+
+<section
+  class="registrationPanel"
+  data-event-registration
+  data-event-slug={eventSlug}
+>
+  <h2>Registration</h2>
+  <div class="facts">
+    <span><CalendarDays size={17} />{date}</span>
+    <span><Clock size={17} />{time}</span>
+    {priceLabel && <span><Ticket size={17} />{priceLabel}</span>}
+  </div>
+  <div class="statusBlock">
+    <strong data-join-status>{status}</strong>
+    <p data-join-note>{note}</p>
+  </div>
+  <button type="button" data-open-join aria-controls={dialogId}>
+    <span data-join-action>{action}</span>
+    <ArrowUpRight size={18} />
+  </button>
+</section>
+
+<dialog class="joinDialog" id={dialogId} data-join-dialog>
+  <form
+    class="joinForm"
+    data-join-form
+    data-event-slug={eventSlug}
+    data-event-title={eventTitle}
+    data-event-date={date}
+    data-event-time={time}
+    data-event-venue={venue}
+    data-event-category={category}
+  >
+    <div class="dialogHead">
+      <div>
+        <p>Join Event</p>
+        <h2>{eventTitle}</h2>
+      </div>
+      <button class="iconButton" type="button" data-close-join aria-label="关闭表单">
+        <X size={18} />
+      </button>
+    </div>
+
+    <div class="eventSummary">
+      <span>{date} | {time}</span>
+      <span>{venue}</span>
+      {priceLabel && <span>{priceLabel}</span>}
+    </div>
+
+    <div class="fieldGrid">
+      <label>
+        <span>姓名</span>
+        <input name="name" autocomplete="name" required />
+      </label>
+      <label>
+        <span>邮箱</span>
+        <input name="email" type="email" autocomplete="email" required />
+      </label>
+      <label>
+        <span>微信</span>
+        <input name="wechat" autocomplete="off" />
+      </label>
+      <label>
+        <span>手机号</span>
+        <input name="phone" type="tel" autocomplete="tel" />
+      </label>
+      <label>
+        <span>角色</span>
+        <select name="role" required>
+          <option value="">请选择</option>
+          <option value="organizer">活动组织者</option>
+          <option value="developer">开发者</option>
+          <option value="product">产品/运营</option>
+          <option value="creator">内容创作者</option>
+          <option value="other">其他</option>
+        </select>
+      </label>
+      <label>
+        <span>公司/组织</span>
+        <input name="company" autocomplete="organization" />
+      </label>
+    </div>
+
+    <label class="fullField">
+      <span>你想从这场活动获得什么？</span>
+      <textarea name="note" rows="3"></textarea>
+    </label>
+
+    <label class="checkboxField">
+      <input name="subscribe_updates" type="checkbox" checked />
+      <span>订阅这个活动的后续通知</span>
+    </label>
+
+    <p class="formMessage" data-join-message aria-live="polite"></p>
+
+    <div class="dialogActions">
+      <button class="ghostButton" type="button" data-close-join>取消</button>
+      <button class="submitButton" type="submit">提交并加入</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+  function applyJoinedState(eventSlug, record) {
+    const panel = document.querySelector(`[data-event-registration][data-event-slug="${eventSlug}"]`);
+    if (!panel || !record) return;
+
+    panel.querySelector("[data-join-status]").textContent = "已加入";
+    panel.querySelector("[data-join-note]").textContent =
+      `${record.name} 已加入这个活动，通知将发送到 ${record.email}。`;
+    panel.querySelector("[data-join-action]").textContent = "修改报名信息";
+  }
+
+  async function loadJoinedState(eventSlug) {
+    const response = await fetch(`/api/subscriptions?event_slug=${encodeURIComponent(eventSlug)}`);
+    if (!response.ok) return;
+
+    const result = await response.json();
+    applyJoinedState(eventSlug, result.subscriptions?.[0]);
+  }
+
+  document.querySelectorAll("[data-open-join]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const dialog = document.getElementById(button.getAttribute("aria-controls"));
+      if (dialog instanceof HTMLDialogElement) {
+        dialog.showModal();
+      }
+    });
+  });
+
+  document.querySelectorAll("[data-close-join]").forEach((button) => {
+    button.addEventListener("click", () => {
+      button.closest("dialog")?.close();
+    });
+  });
+
+  document.querySelectorAll("[data-join-dialog]").forEach((dialog) => {
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) {
+        dialog.close();
+      }
+    });
+  });
+
+  document.querySelectorAll("[data-join-form]").forEach((form) => {
+    loadJoinedState(form.dataset.eventSlug);
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      const formData = new FormData(form);
+      const record = Object.fromEntries(formData.entries());
+      record.event_slug = form.dataset.eventSlug;
+      record.event_title = form.dataset.eventTitle;
+      record.event_date = form.dataset.eventDate;
+      record.event_time = form.dataset.eventTime;
+      record.event_venue = form.dataset.eventVenue;
+      record.event_category = form.dataset.eventCategory;
+      record.subscribe_updates = formData.has("subscribe_updates");
+
+      const submitButton = form.querySelector(".submitButton");
+      const message = form.querySelector("[data-join-message]");
+      if (submitButton instanceof HTMLButtonElement) {
+        submitButton.disabled = true;
+        submitButton.textContent = "提交中...";
+      }
+      if (message) message.textContent = "";
+
+      try {
+        const response = await fetch("/api/subscriptions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(record)
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || "报名失败");
+        }
+
+        applyJoinedState(form.dataset.eventSlug, result.subscription);
+        form.closest("dialog")?.close();
+      } catch (error) {
+        if (message) {
+          message.textContent = error instanceof Error ? error.message : "报名失败";
+        }
+      } finally {
+        if (submitButton instanceof HTMLButtonElement) {
+          submitButton.disabled = false;
+          submitButton.textContent = "提交并加入";
+        }
+      }
+    });
+  });
+</script>
+
+<style>
+  .registrationPanel {
+    display: grid;
+    gap: 16px;
+    padding: 20px;
+    border: 1px solid #dce3df;
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  h2 {
+    margin: 0;
+    color: #17211b;
+    font-size: 20px;
+    letter-spacing: 0;
+  }
+
+  .facts {
+    display: grid;
+    gap: 10px;
+  }
+
+  .facts span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #4f5b55;
+    font-size: 14px;
+    font-weight: 750;
+  }
+
+  .statusBlock {
+    padding-top: 14px;
+    border-top: 1px solid #dce3df;
+  }
+
+  strong {
+    display: block;
+    margin-bottom: 8px;
+    color: #17211b;
+    font-size: 16px;
+  }
+
+  p {
+    margin: 0;
+    color: #68736d;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  button {
+    font: inherit;
+  }
+
+  .registrationPanel > button,
+  .submitButton {
+    min-height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 0;
+    border-radius: 8px;
+    background: #17211b;
+    color: #fff;
+    font-weight: 850;
+    cursor: pointer;
+  }
+
+  .submitButton:disabled {
+    cursor: wait;
+    opacity: 0.72;
+  }
+
+  .joinDialog {
+    width: min(680px, calc(100% - 28px));
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: #fff;
+    color: #17211b;
+    box-shadow: 0 28px 80px rgba(23, 33, 27, 0.28);
+  }
+
+  .joinDialog::backdrop {
+    background: rgba(11, 20, 16, 0.56);
+  }
+
+  .joinForm {
+    display: grid;
+    gap: 18px;
+    padding: 22px;
+  }
+
+  .dialogHead {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .dialogHead p {
+    margin-bottom: 6px;
+    color: #1f7a5a;
+    font-size: 12px;
+    font-weight: 850;
+    text-transform: uppercase;
+  }
+
+  .dialogHead h2 {
+    font-size: 26px;
+    line-height: 1.15;
+  }
+
+  .iconButton {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    border: 1px solid #dce3df;
+    border-radius: 8px;
+    background: #fff;
+    color: #17211b;
+    cursor: pointer;
+  }
+
+  .eventSummary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .eventSummary span {
+    min-height: 30px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 10px;
+    border: 1px solid #dce3df;
+    border-radius: 999px;
+    color: #68736d;
+    font-size: 13px;
+    font-weight: 750;
+  }
+
+  .fieldGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  label {
+    display: grid;
+    gap: 7px;
+    color: #4f5b55;
+    font-size: 14px;
+    font-weight: 750;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    min-height: 42px;
+    border: 1px solid #dce3df;
+    border-radius: 8px;
+    padding: 0 11px;
+    background: #fff;
+    color: #17211b;
+    font: inherit;
+  }
+
+  textarea {
+    padding-top: 10px;
+    resize: vertical;
+  }
+
+  .fullField {
+    grid-template-columns: 1fr;
+  }
+
+  .checkboxField {
+    grid-template-columns: 18px 1fr;
+    align-items: center;
+  }
+
+  .checkboxField input {
+    min-height: 18px;
+    padding: 0;
+  }
+
+  .formMessage {
+    min-height: 20px;
+    color: #a0442b;
+    font-weight: 750;
+  }
+
+  .dialogActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .ghostButton {
+    min-height: 42px;
+    padding: 0 14px;
+    border: 1px solid #dce3df;
+    border-radius: 8px;
+    background: #fff;
+    color: #17211b;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .submitButton {
+    padding: 0 16px;
+  }
+
+  @media (max-width: 620px) {
+    .fieldGrid {
+      grid-template-columns: 1fr;
+    }
+
+    .dialogActions {
+      flex-direction: column-reverse;
+    }
+  }
+</style>

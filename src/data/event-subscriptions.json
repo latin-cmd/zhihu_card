@@ -1,0 +1,19 @@
+[
+  {
+    "event_slug": "mcp-demo-night-mryvn6ys",
+    "event_title": "Hangzhou MCP Demo Night",
+    "event_date": "Sep 12",
+    "event_time": "19:30",
+    "event_venue": "Binjiang Creative Hall",
+    "event_category": "AI",
+    "name": "Mock User",
+    "email": "mock@example.com",
+    "wechat": "mock_wechat",
+    "phone": "13800000000",
+    "role": "developer",
+    "company": "Mock Company",
+    "note": "API smoke test",
+    "subscribe_updates": true,
+    "joined_at": "2026-07-24T11:52:01.300Z"
+  }
+]

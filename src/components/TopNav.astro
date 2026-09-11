@@ -1,0 +1,80 @@
+---
+import { Activity } from "@lucide/astro";
+
+type NavLink = {
+  href: string;
+  label: string;
+};
+
+interface Props {
+  brand: string;
+  links?: NavLink[];
+  variant?: "light" | "transparent";
+}
+
+const { brand, links = [], variant = "light" } = Astro.props;
+---
+
+<nav class:list={["topNav", variant]} aria-label="Primary navigation">
+  <a class="brand" href="/">
+    <Activity size={20} />
+    <span>{brand}</span>
+  </a>
+  <div class="navActions">
+    {links.map((link) => <a href={link.href}>{link.label}</a>)}
+  </div>
+</nav>
+
+<style>
+  .topNav {
+    width: 100%;
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 18px clamp(18px, 5vw, 72px);
+    color: #17211b;
+  }
+
+  .topNav.transparent {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 3;
+    color: #fff;
+  }
+
+  .brand,
+  .navActions {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .brand {
+    gap: 8px;
+    font-weight: 750;
+  }
+
+  .navActions {
+    gap: 18px;
+    font-size: 14px;
+  }
+
+  .navActions a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  @media (max-width: 620px) {
+    .topNav {
+      padding: 16px 18px;
+    }
+
+    .navActions {
+      gap: 12px;
+      font-size: 13px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+  }
+</style>

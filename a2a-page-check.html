@@ -1,0 +1,732 @@
+<!DOCTYPE html><html lang="zh-CN" data-astro-cid-pr2mhsc2><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="A2A community registry under the community domain."><title>A2A | ????¡À?</title><style data-vite-dev-id="D:/ThePrivate/communist_astro/communist/src/pages/a2a.astro?astro&amp;type=style&amp;index=0&amp;lang.css">:root {
+  color-scheme: light;
+  font-family: Inter, PingFang SC, Microsoft YaHei, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif;
+  --ink: #17211b;
+  --muted: #68736d;
+  --line: #dce3df;
+  --paper: #f7f5ee;
+  --panel: #fff;
+  --accent: #1f7a5a;
+  --accentDark: #14533e;
+  --gold: #c58b33;
+}
+
+[data-astro-cid-pr2mhsc2] {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  letter-spacing: 0;
+}
+
+a[data-astro-cid-pr2mhsc2] {
+  color: inherit;
+  text-decoration: none;
+}
+
+button[data-astro-cid-pr2mhsc2] {
+  cursor: pointer;
+}
+
+.hero[data-astro-cid-pr2mhsc2] {
+  position: relative;
+  min-height: 58vh;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  color: #fff;
+  background: linear-gradient(#0c151133, #0c1511e6), linear-gradient(120deg, #173729, #1f7a5a 58%, #c58b33);
+}
+
+.topbar[data-astro-cid-pr2mhsc2] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px clamp(18px, 5vw, 72px);
+}
+
+.brand[data-astro-cid-pr2mhsc2], .navlinks[data-astro-cid-pr2mhsc2], .eyebrow[data-astro-cid-pr2mhsc2], .referenceRow[data-astro-cid-pr2mhsc2] a[data-astro-cid-pr2mhsc2], .cardButton[data-astro-cid-pr2mhsc2], .contactList[data-astro-cid-pr2mhsc2] span[data-astro-cid-pr2mhsc2] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand[data-astro-cid-pr2mhsc2] {
+  font-weight: 750;
+}
+
+.navlinks[data-astro-cid-pr2mhsc2] {
+  gap: 22px;
+  font-size: 14px;
+  color: #ffffffd6;
+}
+
+.navlinks[data-astro-cid-pr2mhsc2] [data-astro-cid-pr2mhsc2][aria-current="page"] {
+  color: #fff;
+  font-weight: 800;
+}
+
+.heroInner[data-astro-cid-pr2mhsc2] {
+  position: relative;
+  z-index: 1;
+  width: min(980px, 100% - 36px);
+  margin: 0 auto;
+  padding: 128px 0 62px;
+}
+
+.eyebrow[data-astro-cid-pr2mhsc2] {
+  width: fit-content;
+  padding: 8px 12px;
+  border: 1px solid #ffffff47;
+  background: #ffffff1f;
+  backdrop-filter: blur(16px);
+  border-radius: 999px;
+  font-size: 14px;
+  margin: 0 0 20px;
+}
+
+h1[data-astro-cid-pr2mhsc2] {
+  max-width: 900px;
+  margin: 0;
+  font-size: clamp(44px, 7vw, 92px);
+  line-height: .96;
+  letter-spacing: 0;
+}
+
+.subtitle[data-astro-cid-pr2mhsc2] {
+  max-width: 720px;
+  margin: 24px 0 0;
+  color: #ffffffd6;
+  font-size: 20px;
+  line-height: 1.6;
+}
+
+.actions[data-astro-cid-pr2mhsc2] {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+
+.primary[data-astro-cid-pr2mhsc2], .secondary[data-astro-cid-pr2mhsc2] {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 8px;
+  padding: 0 18px;
+  font-weight: 700;
+}
+
+.primary[data-astro-cid-pr2mhsc2] {
+  background: #fff;
+  color: var(--ink);
+}
+
+.secondary[data-astro-cid-pr2mhsc2] {
+  border: 1px solid #ffffff5c;
+  color: #fff;
+}
+
+.summaryBand[data-astro-cid-pr2mhsc2] {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.summaryBand[data-astro-cid-pr2mhsc2] div[data-astro-cid-pr2mhsc2] {
+  background: var(--panel);
+  padding: 24px clamp(18px, 5vw, 72px);
+  display: grid;
+  gap: 6px;
+}
+
+.summaryBand[data-astro-cid-pr2mhsc2] strong[data-astro-cid-pr2mhsc2] {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.summaryBand[data-astro-cid-pr2mhsc2] span[data-astro-cid-pr2mhsc2], .sectionHead[data-astro-cid-pr2mhsc2] p[data-astro-cid-pr2mhsc2], .agentCard[data-astro-cid-pr2mhsc2] p[data-astro-cid-pr2mhsc2], .toolItem[data-astro-cid-pr2mhsc2] p[data-astro-cid-pr2mhsc2], .panel[data-astro-cid-pr2mhsc2] p[data-astro-cid-pr2mhsc2], .nearbyList[data-astro-cid-pr2mhsc2] span[data-astro-cid-pr2mhsc2], .partners[data-astro-cid-pr2mhsc2] span[data-astro-cid-pr2mhsc2] {
+  color: var(--muted);
+}
+
+.contentGrid[data-astro-cid-pr2mhsc2] {
+  width: min(1180px, 100% - 36px);
+  margin: 0 auto;
+  padding: 56px 0 80px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 28px;
+  align-items: start;
+}
+
+.mainColumn[data-astro-cid-pr2mhsc2], .sideColumn[data-astro-cid-pr2mhsc2], .section[data-astro-cid-pr2mhsc2], .agentList[data-astro-cid-pr2mhsc2], .contactList[data-astro-cid-pr2mhsc2], .nearbyList[data-astro-cid-pr2mhsc2], .partners[data-astro-cid-pr2mhsc2] {
+  display: grid;
+  gap: 20px;
+}
+
+.section[data-astro-cid-pr2mhsc2] {
+  padding-bottom: 34px;
+  border-bottom: 1px solid var(--line);
+}
+
+.sectionHead[data-astro-cid-pr2mhsc2] p[data-astro-cid-pr2mhsc2] {
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 800;
+  margin: 0 0 8px;
+}
+
+h2[data-astro-cid-pr2mhsc2], h3[data-astro-cid-pr2mhsc2], p[data-astro-cid-pr2mhsc2] {
+  margin-top: 0;
+}
+
+h2[data-astro-cid-pr2mhsc2] {
+  margin-bottom: 0;
+  font-size: 30px;
+}
+
+h3[data-astro-cid-pr2mhsc2] {
+  margin: 10px 0 8px;
+  overflow-wrap: anywhere;
+}
+
+.agentCard[data-astro-cid-pr2mhsc2] {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 16px;
+  padding: 20px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.agentIcon[data-astro-cid-pr2mhsc2] {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: #e6f2ed;
+  color: var(--accent);
+}
+
+.badgeRow[data-astro-cid-pr2mhsc2], .chipRow[data-astro-cid-pr2mhsc2], .referenceRow[data-astro-cid-pr2mhsc2] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.badge[data-astro-cid-pr2mhsc2], .chipRow[data-astro-cid-pr2mhsc2] span[data-astro-cid-pr2mhsc2] {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  border-radius: 6px;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.badge[data-astro-cid-pr2mhsc2] {
+  background: #e6f2ed;
+  color: var(--accentDark);
+}
+
+.chipRow[data-astro-cid-pr2mhsc2] {
+  margin-top: 12px;
+}
+
+.chipRow[data-astro-cid-pr2mhsc2] span[data-astro-cid-pr2mhsc2] {
+  max-width: 100%;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.referenceRow[data-astro-cid-pr2mhsc2] {
+  margin-top: 14px;
+}
+
+.referenceRow[data-astro-cid-pr2mhsc2] a[data-astro-cid-pr2mhsc2] {
+  color: var(--accentDark);
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.cardButton[data-astro-cid-pr2mhsc2] {
+  border: 0;
+  background: none;
+  color: var(--accentDark);
+  padding: 0;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.cardButton[data-astro-cid-pr2mhsc2]:hover, .referenceRow[data-astro-cid-pr2mhsc2] a[data-astro-cid-pr2mhsc2]:hover {
+  text-decoration: underline;
+}
+
+.toolGrid[data-astro-cid-pr2mhsc2] {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.toolItem[data-astro-cid-pr2mhsc2], .panel[data-astro-cid-pr2mhsc2] {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.toolItem[data-astro-cid-pr2mhsc2] {
+  padding: 18px;
+}
+
+.toolItem[data-astro-cid-pr2mhsc2] code[data-astro-cid-pr2mhsc2] {
+  display: block;
+  margin: 12px 0 8px;
+  font-size: 15px;
+  color: var(--accentDark);
+}
+
+.sideColumn[data-astro-cid-pr2mhsc2] {
+  position: sticky;
+  top: 18px;
+}
+
+.panel[data-astro-cid-pr2mhsc2] {
+  padding: 20px;
+}
+
+.panel[data-astro-cid-pr2mhsc2] h2[data-astro-cid-pr2mhsc2] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+.nearbyList[data-astro-cid-pr2mhsc2] div[data-astro-cid-pr2mhsc2], .partners[data-astro-cid-pr2mhsc2] a[data-astro-cid-pr2mhsc2] {
+  display: grid;
+  gap: 4px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+
+.contactList[data-astro-cid-pr2mhsc2] {
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.agentDialog[data-astro-cid-pr2mhsc2] {
+  width: min(760px, 100vw - 32px);
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--ink);
+  box-shadow: 0 28px 80px #17211b47;
+}
+
+.agentDialog[data-astro-cid-pr2mhsc2]::backdrop {
+  background: #0b14108f;
+}
+
+.dialogHead[data-astro-cid-pr2mhsc2] {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  border-bottom: 1px solid var(--line);
+  padding: 20px;
+}
+
+.dialogHead[data-astro-cid-pr2mhsc2] h2[data-astro-cid-pr2mhsc2] {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 24px;
+}
+
+.dialogEyebrow[data-astro-cid-pr2mhsc2] {
+  margin: 0 0 6px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.iconButton[data-astro-cid-pr2mhsc2] {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.dialogBody[data-astro-cid-pr2mhsc2] {
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+}
+
+.detailList[data-astro-cid-pr2mhsc2] {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.detailList[data-astro-cid-pr2mhsc2] div[data-astro-cid-pr2mhsc2] {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 10px;
+}
+
+.detailList[data-astro-cid-pr2mhsc2] dt[data-astro-cid-pr2mhsc2] {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.detailList[data-astro-cid-pr2mhsc2] dd[data-astro-cid-pr2mhsc2] {
+  min-width: 0;
+  margin: 0;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.detailList[data-astro-cid-pr2mhsc2] a[data-astro-cid-pr2mhsc2] {
+  color: var(--accentDark);
+  font-weight: 750;
+}
+
+.dialogSection[data-astro-cid-pr2mhsc2] {
+  display: grid;
+  gap: 10px;
+}
+
+.dialogSection[data-astro-cid-pr2mhsc2] h3[data-astro-cid-pr2mhsc2] {
+  margin: 0;
+  font-size: 16px;
+}
+
+.chipRow[data-astro-cid-pr2mhsc2].wide span[data-astro-cid-pr2mhsc2] {
+  white-space: normal;
+}
+
+.emptyText[data-astro-cid-pr2mhsc2] {
+  margin: 0;
+  color: var(--muted);
+}
+
+pre[data-astro-cid-pr2mhsc2] {
+  max-height: 260px;
+  overflow: auto;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f3f0e7;
+  color: #26352c;
+  padding: 14px;
+  font: 12px / 1.55 ui-monospace, Cascadia Code, monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (width <= 860px) {
+  .summaryBand[data-astro-cid-pr2mhsc2], .contentGrid[data-astro-cid-pr2mhsc2], .toolGrid[data-astro-cid-pr2mhsc2] {
+    grid-template-columns: 1fr;
+  }
+
+  .contentGrid[data-astro-cid-pr2mhsc2] {
+    padding-top: 36px;
+  }
+
+  .sideColumn[data-astro-cid-pr2mhsc2] {
+    position: static;
+  }
+}
+
+@media (width <= 520px) {
+  .topbar[data-astro-cid-pr2mhsc2] {
+    padding: 18px;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .navlinks[data-astro-cid-pr2mhsc2] {
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .heroInner[data-astro-cid-pr2mhsc2] {
+    padding-bottom: 42px;
+  }
+
+  .subtitle[data-astro-cid-pr2mhsc2] {
+    font-size: 17px;
+  }
+
+  .agentCard[data-astro-cid-pr2mhsc2] {
+    grid-template-columns: 1fr;
+  }
+
+  .dialogHead[data-astro-cid-pr2mhsc2] {
+    flex-direction: column;
+  }
+
+  .detailList[data-astro-cid-pr2mhsc2] div[data-astro-cid-pr2mhsc2] {
+    grid-template-columns: 1fr;
+  }
+}
+</style><style data-vite-dev-id="D:/ThePrivate/communist_astro/communist/src/pages/a2a.astro?astro&amp;type=style&amp;index=1&amp;lang.css">.agentDialog {
+    width: min(760px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+    padding: 0;
+    border: 1px solid #dce3df;
+    border-radius: 8px;
+    background: #fff;
+    color: #17211b;
+    box-shadow: 0 28px 80px rgba(23, 33, 27, 0.28);
+  }
+
+  .agentDialog::backdrop {
+    background: rgba(11, 20, 16, 0.56);
+  }
+
+  .agentDialog .dialogHead {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    border-bottom: 1px solid #dce3df;
+    padding: 20px;
+  }
+
+  .agentDialog .dialogHead h2 {
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-size: 24px;
+    line-height: 1.2;
+  }
+
+  .agentDialog .dialogEyebrow {
+    margin: 0 0 6px;
+    color: #1f7a5a;
+    font-size: 12px;
+    font-weight: 850;
+    text-transform: uppercase;
+  }
+
+  .agentDialog .iconButton {
+    width: 36px;
+    height: 36px;
+    flex: 0 0 auto;
+    border: 1px solid #dce3df;
+    border-radius: 8px;
+    background: #fff;
+    color: #17211b;
+    font: inherit;
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .agentDialog .dialogBody {
+    display: grid;
+    gap: 18px;
+    padding: 20px;
+  }
+
+  .agentDialog .badgeRow,
+  .agentDialog .chipRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .agentDialog .badge,
+  .agentDialog .chipRow span {
+    display: inline-flex;
+    min-height: 24px;
+    align-items: center;
+    border-radius: 6px;
+    padding: 0 8px;
+    font-size: 12px;
+    font-weight: 750;
+  }
+
+  .agentDialog .badge {
+    background: #e6f2ed;
+    color: #14533e;
+  }
+
+  .agentDialog .chipRow span {
+    max-width: 100%;
+    border: 1px solid #dce3df;
+    color: #68736d;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  .agentDialog .detailList {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+  }
+
+  .agentDialog .detailList div {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    gap: 12px;
+    border-bottom: 1px solid #dce3df;
+    padding-bottom: 10px;
+  }
+
+  .agentDialog .detailList dt {
+    color: #68736d;
+    font-weight: 800;
+  }
+
+  .agentDialog .detailList dd {
+    min-width: 0;
+    margin: 0;
+    color: #68736d;
+    overflow-wrap: anywhere;
+  }
+
+  .agentDialog .detailList a {
+    color: #14533e;
+    font-weight: 750;
+  }
+
+  .agentDialog .dialogSection {
+    display: grid;
+    gap: 10px;
+  }
+
+  .agentDialog .dialogSection h3 {
+    margin: 0;
+    color: #17211b;
+    font-size: 16px;
+  }
+
+  .agentDialog .emptyText {
+    margin: 0;
+    color: #68736d;
+  }
+
+  .agentDialog pre {
+    max-width: 100%;
+    max-height: 260px;
+    overflow: auto;
+    margin: 0;
+    border: 1px solid #dce3df;
+    border-radius: 8px;
+    background: #f3f0e7;
+    color: #26352c;
+    padding: 14px;
+    font: 12px/1.55 ui-monospace, "Cascadia Code", monospace;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 520px) {
+    .agentDialog .dialogHead {
+      flex-direction: column;
+    }
+
+    .agentDialog .detailList div {
+      grid-template-columns: 1fr;
+    }
+  }</style><script type="module" src="/@vite/client"></script><script type="module" src="/@id/astro/runtime/client/dev-toolbar/entrypoint.js"></script><script>window.__astro_dev_toolbar__ = {"root":"file:///D:/ThePrivate/communist_astro/communist/","version":"7.1.3","debugInfo":""}</script><script type="module" src="/src/pages/a2a.astro?astro&type=style&index=0&lang.css"></script><script type="module" src="/src/pages/a2a.astro?astro&type=style&index=1&lang.css"></script></head><body data-astro-cid-pr2mhsc2><main data-astro-cid-pr2mhsc2><section class="hero" data-astro-cid-pr2mhsc2><nav class="topbar" aria-label="Primary navigation" data-astro-cid-pr2mhsc2><a href="/" class="brand" data-astro-cid-pr2mhsc2><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-pr2mhsc2="true" class="lucide lucide-activity"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path></svg>????¡À?</a><div class="navlinks" data-astro-cid-pr2mhsc2><a href="/" data-astro-cid-pr2mhsc2>Community</a><a href="/events" data-astro-cid-pr2mhsc2>Events</a><a href="/a2a" aria-current="page" data-astro-cid-pr2mhsc2>A2A</a></div></nav><div class="heroInner" data-astro-cid-pr2mhsc2><p class="eyebrow" data-astro-cid-pr2mhsc2><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-pr2mhsc2="true" class="lucide lucide-sparkles"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg>A2A Community</p><h1 data-astro-cid-pr2mhsc2>Agent Registry</h1><p class="subtitle" data-astro-cid-pr2mhsc2>A signed discovery page for community A2A agents. The registry UI lives in the main community site, while approval, signing, and deployment actions remain in the private source repository.</p><div class="actions" data-astro-cid-pr2mhsc2><a class="primary" href="https://community.crito.top/a2a/registry/registry.json" target="_blank" rel="noreferrer" data-astro-cid-pr2mhsc2>Registry JSON<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-pr2mhsc2="true" class="lucide lucide-arrow-up-right"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a></div></div></section><section class="summaryBand" data-astro-cid-pr2mhsc2><div data-astro-cid-pr2mhsc2><strong data-astro-cid-pr2mhsc2>2</strong><span data-astro-cid-pr2mhsc2>Active agents</span></div><div data-astro-cid-pr2mhsc2><strong data-astro-cid-pr2mhsc2>2</strong><span data-astro-cid-pr2mhsc2>Signed records</span></div><div data-astro-cid-pr2mhsc2><strong data-astro-cid-pr2mhsc2>0.1</strong><span data-astro-cid-pr2mhsc2>Registry version</span></div></section><section class="contentGrid" data-astro-cid-pr2mhsc2><div class="mainColumn" data-astro-cid-pr2mhsc2><section class="section" data-astro-cid-pr2mhsc2><div class="sectionHead" data-astro-cid-pr2mhsc2><p data-astro-cid-pr2mhsc2>Directory</p><h2 data-astro-cid-pr2mhsc2>Agents</h2></div><div class="agentList" data-astro-cid-pr2mhsc2><article class="agentCard" data-astro-cid-pr2mhsc2><div class="agentIcon" data-astro-cid-pr2mhsc2><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-pr2mhsc2="true" class="lucide lucide-network"><rect x="16" y="16" width="6" height="6" rx="1"></rect><rect x="2" y="16" width="6" height="6" rx="1"></rect><rect x="9" y="2" width="6" height="6" rx="1"></rect><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"></path><path d="M12 12V8"></path></svg></div><div data-astro-cid-pr2mhsc2><div class="badgeRow" data-astro-cid-pr2mhsc2><span class="badge" data-astro-cid-pr2mhsc2>Signed</span></div><h3 data-astro-cid-pr2mhsc2>Crito Temporary Test Agent</h3><p data-astro-cid-pr2mhsc2>Crito Labs</p><div class="chipRow" data-astro-cid-pr2mhsc2><span data-astro-cid-pr2mhsc2>registry-connectivity-test</span></div><div class="referenceRow" data-astro-cid-pr2mhsc2><button class="cardButton" type="button" data-card-index="0" data-astro-cid-pr2mhsc2>Agent Card<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-pr2mhsc2="true" class="lucide lucide-arrow-up-right"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></button><a href="https://crito-temp-agent.m937746825.chatgpt.site/a2a" target="_blank" rel="noreferrer" data-astro-cid-pr2mhsc2>A2A Endpoint<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-pr2mhsc2="true" class="lucide lucide-arrow-up-right"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a></div></div></article><article class="agentCard" data-astro-cid-pr2mhsc2><div class="agentIcon" data-astro-cid-pr2mhsc2><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-pr2mhsc2="true" class="lucide lucide-network"><rect x="16" y="16" width="6" height="6" rx="1"></rect><rect x="2" y="16" width="6" height="6" rx="1"></rect><rect x="9" y="2" width="6" height="6" rx="1"></rect><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"></path><path d="M12 12V8"></path></svg></div><div data-astro-cid-pr2mhsc2><div class="badgeRow" data-astro-cid-pr2mhsc2><span class="badge" data-astro-cid-pr2mhsc2>Signed</span></div><h3 data-astro-cid-pr2mhsc2>Crito Pages Flow Test Agent</h3><p data-astro-cid-pr2mhsc2>Crito Labs</p><div class="chipRow" data-astro-cid-pr2mhsc2><span data-astro-cid-pr2mhsc2>registry-approval-flow-test</span></div><div class="referenceRow" data-astro-cid-pr2mhsc2><button class="cardButton" type="button" data-card-index="1" data-astro-cid-pr2mhsc2>Agent Card<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-pr2mhsc2="true" class="lucide lucide-arrow-up-right"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></button><a href="https://crito-a2a-agent.m937746825.chatgpt.site/a2a" target="_blank" rel="noreferrer" data-astro-cid-pr2mhsc2>A2A Endpoint<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-pr2mhsc2="true" class="lucide lucide-arrow-up-right"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a></div></div></article></div></section><section class="section" data-astro-cid-pr2mhsc2><div class="sectionHead" data-astro-cid-pr2mhsc2><p data-astro-cid-pr2mhsc2>Routes</p><h2 data-astro-cid-pr2mhsc2>Community endpoints</h2></div><div class="toolGrid" data-astro-cid-pr2mhsc2><a class="toolItem" href="https://community.crito.top/a2a/registry/registry.json" target="_blank" rel="noreferrer" data-astro-cid-pr2mhsc2><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-pr2mhsc2="true" class="lucide lucide-search"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg><code data-astro-cid-pr2mhsc2>Registry</code><p data-astro-cid-pr2mhsc2>Full signed registry</p></a><a class="toolItem" href="https://community.crito.top/a2a/registry/search?q=" target="_blank" rel="noreferrer" data-astro-cid-pr2mhsc2><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-pr2mhsc2="true" class="lucide lucide-search"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg><code data-astro-cid-pr2mhsc2>Search</code><p data-astro-cid-pr2mhsc2>Filter active agents</p></a><a class="toolItem" href="https://community.crito.top/a2a/registry/stats" target="_blank" rel="noreferrer" data-astro-cid-pr2mhsc2><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-pr2mhsc2="true" class="lucide lucide-search"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg><code data-astro-cid-pr2mhsc2>Stats</code><p data-astro-cid-pr2mhsc2>Registry health and skill metrics</p></a><a class="toolItem" href="https://community.crito.top/a2a/registry/register" target="_blank" rel="noreferrer" data-astro-cid-pr2mhsc2><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-pr2mhsc2="true" class="lucide lucide-search"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg><code data-astro-cid-pr2mhsc2>Register</code><p data-astro-cid-pr2mhsc2>POST cardUrl for a challenge</p></a><a class="toolItem" href="https://community.crito.top/a2a/registry/verify" target="_blank" rel="noreferrer" data-astro-cid-pr2mhsc2><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-pr2mhsc2="true" class="lucide lucide-search"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg><code data-astro-cid-pr2mhsc2>Verify</code><p data-astro-cid-pr2mhsc2>POST cardUrl after x-crito is deployed</p></a><a class="toolItem" href="https://community.crito.top/a2a/registry/pubkey" target="_blank" rel="noreferrer" data-astro-cid-pr2mhsc2><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-pr2mhsc2="true" class="lucide lucide-search"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg><code data-astro-cid-pr2mhsc2>Pubkey</code><p data-astro-cid-pr2mhsc2>Community public signing key</p></a></div></section></div><aside class="sideColumn" data-astro-cid-pr2mhsc2><section class="panel" data-astro-cid-pr2mhsc2><h2 data-astro-cid-pr2mhsc2><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-pr2mhsc2="true" class="lucide lucide-shield-check"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg>Registry boundary</h2><p data-astro-cid-pr2mhsc2>The community page discovers and links agents. It does not proxy A2A traffic; clients still call each agent's declared endpoint directly.</p></section><section class="panel" data-astro-cid-pr2mhsc2><h2 data-astro-cid-pr2mhsc2><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-pr2mhsc2="true" class="lucide lucide-key-round"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle></svg>Covenant</h2><p data-astro-cid-pr2mhsc2>0.1 / 0819bf9602d693defa054d8ff95b98f0ef4cf7731415e02694b2cbe6787fc544</p><div class="contactList" data-astro-cid-pr2mhsc2><span data-astro-cid-pr2mhsc2><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-pr2mhsc2="true" class="lucide lucide-database"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5V19A9 3 0 0 0 21 19V5"></path><path d="M3 12A9 3 0 0 0 21 12"></path></svg>https://community.crito.top/a2a/registry</span><span data-astro-cid-pr2mhsc2><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-pr2mhsc2="true" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"></path></svg>0 task verified</span><span data-astro-cid-pr2mhsc2><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-pr2mhsc2="true" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"></path></svg>0 healthy</span></div></section><section class="panel" data-astro-cid-pr2mhsc2><h2 data-astro-cid-pr2mhsc2><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-pr2mhsc2="true" class="lucide lucide-sparkles"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg>Skills</h2><div class="partners" data-astro-cid-pr2mhsc2><a href="https://community.crito.top/a2a/registry/search?skill=registry-approval-flow-test" target="_blank" rel="noreferrer" data-astro-cid-pr2mhsc2><strong data-astro-cid-pr2mhsc2>registry-approval-flow-test</strong><span data-astro-cid-pr2mhsc2>1 agent</span></a><a href="https://community.crito.top/a2a/registry/search?skill=registry-connectivity-test" target="_blank" rel="noreferrer" data-astro-cid-pr2mhsc2><strong data-astro-cid-pr2mhsc2>registry-connectivity-test</strong><span data-astro-cid-pr2mhsc2>1 agent</span></a></div></section></aside></section></main><dialog id="agentDialog" class="agentDialog" data-astro-cid-pr2mhsc2><div class="dialogHead" data-astro-cid-pr2mhsc2><div data-astro-cid-pr2mhsc2><p id="dialogOwner" class="dialogEyebrow" data-astro-cid-pr2mhsc2></p><h2 id="dialogName" data-astro-cid-pr2mhsc2></h2></div><button id="closeDialog" class="iconButton" type="button" aria-label="Close agent card" data-astro-cid-pr2mhsc2>x</button></div><div id="dialogBody" class="dialogBody" data-astro-cid-pr2mhsc2></div></dialog><script>(function(){const agentCards = [{"name":"Crito Temporary Test Agent","owner":"Crito Labs","cardUrl":"https://crito-temp-agent.m937746825.chatgpt.site/.well-known/agent-card.json","url":"https://crito-temp-agent.m937746825.chatgpt.site/a2a","skills":["registry-connectivity-test"],"tags":["test","registry","a2a","crito"],"status":"active","verified":{"by":"Crito A2A Community","method":"domain-control+covenant-hash","issuedAt":"2026-07-30T11:25:30.398Z","signature":"7asMN+l+GB+t9czMuvnmKEq0jWbtWDgBVtWJqiTX14Hwzi7idTCzBczk9YlTIn7TcXWFPw/bCQJKXaeWPKI2Cg=="},"covenant":{"version":"0.1","url":"https://community.crito.top/a2a/registry/covenant/0.1","sha256":"0819bf9602d693defa054d8ff95b98f0ef4cf7731415e02694b2cbe6787fc544"},"quality":null},{"name":"Crito Pages Flow Test Agent","owner":"Crito Labs","cardUrl":"https://crito-a2a-agent.m937746825.chatgpt.site/.well-known/agent-card.json","url":"https://crito-a2a-agent.m937746825.chatgpt.site/a2a","skills":["registry-approval-flow-test"],"tags":["test","registry","approval","a2a"],"status":"active","verified":{"by":"Crito A2A Community","method":"domain-control+covenant-hash","issuedAt":"2026-07-30T11:25:30.399Z","signature":"Ah43Ow/eiS5FERHGX2gH4atEkaFyxQegfvplvWghIF0qPX4HeoetaKx0qhpQLyQ1QMAFEbN9hjUkT55Q2D0SDA=="},"covenant":{"version":"0.1","url":"https://community.crito.top/a2a/registry/covenant/0.1","sha256":"0819bf9602d693defa054d8ff95b98f0ef4cf7731415e02694b2cbe6787fc544"},"quality":null}];
+
+      const agents = agentCards;
+      const dialog = document.getElementById("agentDialog");
+      const dialogOwner = document.getElementById("dialogOwner");
+      const dialogName = document.getElementById("dialogName");
+      const dialogBody = document.getElementById("dialogBody");
+
+      const escapeHtml = (value) => String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+
+      const badge = (label) => `<span class="badge">${escapeHtml(label)}</span>`;
+      const chips = (items) => items?.length
+        ? `<div class="chipRow wide">${items.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div>`
+        : `<p class="emptyText">None declared.</p>`;
+
+      function renderAgentCard(agent) {
+        const status = [
+          agent.verified && "Signed",
+          agent.quality?.conformance?.cardValid && "Conformant",
+          agent.quality?.health?.reachable && "Healthy",
+          agent.quality?.taskConformance?.passed && "Task verified"
+        ].filter(Boolean).map(badge).join("");
+
+        return `
+          <div class="badgeRow">${status || badge(agent.status)}</div>
+          <dl class="detailList">
+            <div><dt>Card</dt><dd><a href="${escapeHtml(agent.cardUrl)}" target="_blank" rel="noreferrer">${escapeHtml(agent.cardUrl)}</a></dd></div>
+            <div><dt>A2A</dt><dd><a href="${escapeHtml(agent.url)}" target="_blank" rel="noreferrer">${escapeHtml(agent.url)}</a></dd></div>
+            <div><dt>Owner</dt><dd>${escapeHtml(agent.owner)}</dd></div>
+            <div><dt>Verified</dt><dd>${escapeHtml(agent.verified?.method ?? "unsigned")} ${escapeHtml(agent.verified?.issuedAt ?? "")}</dd></div>
+            <div><dt>Covenant</dt><dd>${escapeHtml(agent.covenant?.version ?? "-")} / ${escapeHtml(agent.covenant?.sha256 ?? "-")}</dd></div>
+          </dl>
+          <section class="dialogSection">
+            <h3>Skills</h3>
+            ${chips(agent.skills)}
+          </section>
+          <section class="dialogSection">
+            <h3>Tags</h3>
+            ${chips(agent.tags)}
+          </section>
+          <section class="dialogSection">
+            <h3>Registry record</h3>
+            <pre>${escapeHtml(JSON.stringify(agent, null, 2))}</pre>
+          </section>
+        `;
+      }
+
+      document.querySelectorAll("[data-card-index]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const agent = agents[Number(button.dataset.cardIndex)];
+          if (!agent || !(dialog instanceof HTMLDialogElement)) return;
+          dialogOwner.textContent = agent.owner;
+          dialogName.textContent = agent.name;
+          dialogBody.innerHTML = renderAgentCard(agent);
+          dialog.showModal();
+        });
+      });
+
+      document.getElementById("closeDialog")?.addEventListener("click", () => {
+        if (dialog instanceof HTMLDialogElement) dialog.close();
+      });
+
+      dialog?.addEventListener("click", (event) => {
+        if (event.target === dialog && dialog instanceof HTMLDialogElement) dialog.close();
+      });
+    })();</script></body></html>

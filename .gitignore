@@ -1,5 +1,7 @@
 node_modules/
 dist/
 .astro/
+.wrangler/
 .env
 *.log
+A2A/

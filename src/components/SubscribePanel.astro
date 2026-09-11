@@ -1,0 +1,71 @@
+---
+import { Bell, MapPin } from "@lucide/astro";
+
+interface Props {
+  city: string;
+  description: string;
+}
+
+const { city, description } = Astro.props;
+---
+
+<aside class="subscribePanel">
+  <div class="icon">
+    <MapPin size={22} />
+  </div>
+  <h2>{city}</h2>
+  <p>{description}</p>
+  <a href="#">
+    <Bell size={18} />
+    <span>Subscribe</span>
+  </a>
+</aside>
+
+<style>
+  .subscribePanel {
+    display: grid;
+    gap: 12px;
+    padding: 20px;
+    border: 1px solid #dce3df;
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .icon {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: #e6f2ed;
+    color: #1f7a5a;
+  }
+
+  h2 {
+    margin: 0;
+    color: #17211b;
+    font-size: 22px;
+    letter-spacing: 0;
+  }
+
+  p {
+    margin: 0;
+    color: #68736d;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  a {
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 4px;
+    border-radius: 8px;
+    background: #17211b;
+    color: #fff;
+    font-weight: 800;
+    text-decoration: none;
+  }
+</style>

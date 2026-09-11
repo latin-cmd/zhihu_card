@@ -1,0 +1,419 @@
+---
+import EventCard from "../components/EventCard.astro";
+import OrganizerContactForm from "../components/OrganizerContactForm.astro";
+import SubscribePanel from "../components/SubscribePanel.astro";
+import { cityPage } from "../data/events";
+import { listEventsWithSubmissions, readOrganizerContactCard } from "../lib/activity-store";
+
+const events = await listEventsWithSubmissions();
+const contactCard = await readOrganizerContactCard("events", cityPage.brand);
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="杭州城市活动列表，仿 Luma 风格卡片展示。" />
+    <title>{cityPage.city}活动 | Events</title>
+  </head>
+  <body>
+    <main>
+      <section class="content">
+        <div class="mainColumn">
+          <div class="sectionHeader">
+            <div>
+              <p>Events</p>
+              <h2>Events</h2>
+            </div>
+            <button type="button" data-open-submit>Submit Event</button>
+          </div>
+          <div class="eventGrid" data-event-grid>
+            {events.map((event) => <EventCard {...event} href={`/events/${event.slug}`} />)}
+          </div>
+        </div>
+        <div class="sideColumn">
+          <SubscribePanel
+            city={cityPage.city}
+            description={cityPage.subscribeDescription}
+          />
+          <OrganizerContactForm
+            eventSlug="events"
+            title={cityPage.brand}
+            organizerName={contactCard.organizer_name}
+            qrImageUrl={contactCard.qr_image_url}
+            organizerNote={contactCard.organizer_note}
+            contactNote={contactCard.contact_note}
+            subscribeNote={contactCard.subscribe_note}
+            reportNote={contactCard.report_note}
+            showSubscribe={true}
+            showContact={false}
+            showReport={false}
+          />
+        </div>
+      </section>
+    </main>
+
+    <dialog class="submitDialog" data-submit-dialog>
+      <form class="submitForm" data-submit-event-form>
+        <div class="dialogHead">
+          <div>
+            <p>Submit Event</p>
+            <h2>添加活动</h2>
+          </div>
+          <button class="iconButton" type="button" data-close-submit aria-label="关闭表单">×</button>
+        </div>
+
+        <div class="fieldGrid">
+          <label>
+            <span>活动标题</span>
+            <input name="title" required />
+          </label>
+          <label>
+            <span>分类</span>
+            <input name="category" placeholder="AI / Product / Design" required />
+          </label>
+          <label>
+            <span>主办方</span>
+            <input name="host" required />
+          </label>
+          <label>
+            <span>场地名称</span>
+            <input name="venue" required />
+          </label>
+          <label>
+            <span>日期</span>
+            <input name="date" placeholder="9月12日" required />
+          </label>
+          <label>
+            <span>时间</span>
+            <input name="time" placeholder="19:30" required />
+          </label>
+          <label>
+            <span>价格</span>
+            <input name="priceLabel" placeholder="免费预约 / ¥99" required />
+          </label>
+          <label>
+            <span>报名状态</span>
+            <select name="statusLabel" required>
+              <option value="开放报名">开放报名</option>
+              <option value="Limited">Limited</option>
+              <option value="Waitlist">Waitlist</option>
+              <option value="Sold Out">Sold Out</option>
+            </select>
+          </label>
+          <label class="fullField">
+            <span>封面图 URL</span>
+            <input
+              name="cover"
+              placeholder="留空则使用默认活动封面"
+            />
+          </label>
+          <label class="fullField">
+            <span>详细地址</span>
+            <input name="locationAddress" required />
+          </label>
+          <label class="fullField">
+            <span>活动介绍</span>
+            <textarea name="about" rows="4" required></textarea>
+          </label>
+        </div>
+
+        <p class="formMessage" data-submit-message aria-live="polite"></p>
+
+        <div class="dialogActions">
+          <button class="ghostButton" type="button" data-close-submit>取消</button>
+          <button class="submitButton" type="submit">添加活动</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script>
+      const dialog = document.querySelector("[data-submit-dialog]");
+      const form = document.querySelector("[data-submit-event-form]");
+      const message = document.querySelector("[data-submit-message]");
+
+      document.querySelector("[data-open-submit]")?.addEventListener("click", () => {
+        if (dialog instanceof HTMLDialogElement) dialog.showModal();
+      });
+
+      document.querySelectorAll("[data-close-submit]").forEach((button) => {
+        button.addEventListener("click", () => dialog?.close());
+      });
+
+      dialog?.addEventListener("click", (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+
+      form?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!(form instanceof HTMLFormElement)) return;
+
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+
+        const submitButton = form.querySelector(".submitButton");
+        const formData = new FormData(form);
+        const payload = Object.fromEntries(formData.entries());
+
+        if (submitButton instanceof HTMLButtonElement) {
+          submitButton.disabled = true;
+          submitButton.textContent = "提交中...";
+        }
+        if (message) message.textContent = "";
+
+        try {
+          const response = await fetch("/api/events", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          const result = await response.json();
+
+          if (!response.ok) {
+            throw new Error(result.error || "提交失败");
+          }
+
+          window.location.href = `/events/${result.event.slug}`;
+        } catch (error) {
+          if (message) {
+            message.textContent = error instanceof Error ? error.message : "提交失败";
+          }
+          if (submitButton instanceof HTMLButtonElement) {
+            submitButton.disabled = false;
+            submitButton.textContent = "添加活动";
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
+
+<style>
+  :root {
+    color-scheme: light;
+    font-family:
+      Inter, "PingFang SC", "Microsoft YaHei", system-ui, -apple-system,
+      BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f7f5ee;
+    color: #17211b;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: #f7f5ee;
+    letter-spacing: 0;
+  }
+
+  .content {
+    width: min(1120px, calc(100% - 36px));
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 28px;
+    margin: 0 auto;
+    padding: 24px 0 84px;
+    align-items: start;
+  }
+
+  .eventGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .sectionHeader {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+
+  .sectionHeader p {
+    margin: 0 0 8px;
+    color: #68736d;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .sectionHeader h2 {
+    margin: 0;
+    color: #17211b;
+    font-size: 30px;
+    line-height: 1.1;
+  }
+
+  .sectionHeader button,
+  .submitButton {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 14px;
+    border: 1px solid #dce3df;
+    border-radius: 8px;
+    background: #17211b;
+    color: #fff;
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .submitButton:disabled {
+    cursor: wait;
+    opacity: 0.72;
+  }
+
+  .submitDialog {
+    width: min(760px, calc(100% - 28px));
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: #fff;
+    color: #17211b;
+    box-shadow: 0 28px 80px rgba(23, 33, 27, 0.28);
+  }
+
+  .submitDialog::backdrop {
+    background: rgba(11, 20, 16, 0.56);
+  }
+
+  .submitForm {
+    display: grid;
+    gap: 18px;
+    padding: 22px;
+  }
+
+  .dialogHead {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .dialogHead p {
+    margin: 0 0 6px;
+    color: #1f7a5a;
+    font-size: 12px;
+    font-weight: 850;
+    text-transform: uppercase;
+  }
+
+  .dialogHead h2 {
+    margin: 0;
+    font-size: 26px;
+    line-height: 1.15;
+  }
+
+  .iconButton {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #dce3df;
+    border-radius: 8px;
+    background: #fff;
+    color: #17211b;
+    font-size: 22px;
+    cursor: pointer;
+  }
+
+  .fieldGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  label {
+    display: grid;
+    gap: 7px;
+    color: #4f5b55;
+    font-size: 14px;
+    font-weight: 750;
+  }
+
+  .fullField {
+    grid-column: 1 / -1;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    min-height: 42px;
+    border: 1px solid #dce3df;
+    border-radius: 8px;
+    padding: 0 11px;
+    background: #fff;
+    color: #17211b;
+    font: inherit;
+  }
+
+  textarea {
+    padding-top: 10px;
+    resize: vertical;
+  }
+
+  .formMessage {
+    min-height: 20px;
+    margin: 0;
+    color: #a0442b;
+    font-size: 14px;
+    font-weight: 750;
+  }
+
+  .dialogActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .ghostButton {
+    min-height: 42px;
+    padding: 0 14px;
+    border: 1px solid #dce3df;
+    border-radius: 8px;
+    background: #fff;
+    color: #17211b;
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .sideColumn {
+    position: sticky;
+    top: 18px;
+  }
+
+  @media (min-width: 1180px) {
+    .eventGrid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 880px) {
+    .content {
+      grid-template-columns: 1fr;
+    }
+
+    .sideColumn {
+      position: static;
+      order: -1;
+    }
+  }
+
+  @media (max-width: 620px) {
+    .eventGrid,
+    .fieldGrid {
+      grid-template-columns: 1fr;
+    }
+
+    .dialogActions {
+      flex-direction: column-reverse;
+    }
+  }
+</style>

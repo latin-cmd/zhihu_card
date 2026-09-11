@@ -1,0 +1,82 @@
+---
+import { MapPin } from "@lucide/astro";
+
+interface Props {
+  name: string;
+  address: string;
+}
+
+const { name, address } = Astro.props;
+---
+
+<section class="locationBlock">
+  <h2>Location</h2>
+  <div class="locationCard">
+    <div class="mapMock" aria-hidden="true">
+      <MapPin size={34} />
+    </div>
+    <div>
+      <strong>{name}</strong>
+      <p>{address}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .locationBlock {
+    display: grid;
+    gap: 14px;
+  }
+
+  h2 {
+    margin: 0;
+    color: #17211b;
+    font-size: 26px;
+    letter-spacing: 0;
+  }
+
+  .locationCard {
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr);
+    border: 1px solid #dce3df;
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .mapMock {
+    min-height: 128px;
+    display: grid;
+    place-items: center;
+    background:
+      linear-gradient(90deg, rgba(31, 122, 90, 0.12) 1px, transparent 1px),
+      linear-gradient(rgba(31, 122, 90, 0.12) 1px, transparent 1px),
+      #eef4f0;
+    background-size: 24px 24px;
+    color: #1f7a5a;
+  }
+
+  .locationCard > div:last-child {
+    display: grid;
+    align-content: center;
+    gap: 6px;
+    padding: 18px;
+  }
+
+  strong {
+    color: #17211b;
+    font-size: 17px;
+  }
+
+  p {
+    margin: 0;
+    color: #68736d;
+    line-height: 1.55;
+  }
+
+  @media (max-width: 620px) {
+    .locationCard {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

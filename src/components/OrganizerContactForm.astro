@@ -1,0 +1,386 @@
+---
+import { Bell, Flag, Mail, MessageCircle, X } from "@lucide/astro";
+
+interface Props {
+  eventSlug: string;
+  title: string;
+  organizerName: string;
+  qrImageUrl?: string;
+  organizerNote?: string;
+  contactNote?: string;
+  subscribeNote?: string;
+  reportNote?: string;
+  showSubscribe?: boolean;
+  showContact?: boolean;
+  showReport?: boolean;
+  contactLabel?: string;
+}
+
+const {
+  eventSlug,
+  title,
+  organizerName,
+  qrImageUrl = "",
+  organizerNote = "",
+  contactNote = "",
+  subscribeNote = "",
+  reportNote = "",
+  showSubscribe = true,
+  showContact = true,
+  showReport = true,
+  contactLabel = "联系活动者"
+} = Astro.props;
+
+const dialogId = `organizer-contact-${eventSlug}`;
+---
+
+<section class="contactFormPanel" data-organizer-contact-panel>
+  <div class="panelHead">
+    <div class="icon">
+      <MessageCircle size={22} />
+    </div>
+    <div>
+      <h2>{organizerName}</h2>
+      <p>{organizerNote || "通过活动者微信完成报名确认、进群和线下参与沟通。"}</p>
+    </div>
+  </div>
+
+  <div class="qrFrame">
+    {
+      qrImageUrl ? (
+        <img src={qrImageUrl} alt={`${organizerName} 微信二维码`} loading="lazy" decoding="async" />
+      ) : (
+        <div class="emptyQr">
+          <MessageCircle size={30} />
+          <span>二维码待配置</span>
+        </div>
+      )
+    }
+  </div>
+
+  <div class="actions">
+    {
+      showSubscribe && (
+        <button type="button" data-open-organizer-contact aria-controls={dialogId} data-action-kind="subscribe">
+          <Bell size={17} />
+          <span>Subscribe</span>
+        </button>
+      )
+    }
+    {
+      showContact && (
+        <button type="button" data-open-organizer-contact aria-controls={dialogId} data-action-kind="contact">
+          <Mail size={17} />
+          <span>{contactLabel}</span>
+        </button>
+      )
+    }
+    {
+      showReport && (
+        <button class="secondary" type="button" data-open-organizer-contact aria-controls={dialogId} data-action-kind="report">
+          <Flag size={16} />
+          <span>Report Event</span>
+        </button>
+      )
+    }
+  </div>
+</section>
+
+<dialog class="contactDialog" id={dialogId} data-organizer-contact-dialog>
+  <form class="contactForm" method="dialog">
+    <div class="dialogHead">
+      <div>
+        <p data-contact-dialog-label>Contact</p>
+        <h2>{title}</h2>
+      </div>
+      <button class="iconButton" type="button" data-close-organizer-contact aria-label="关闭表单">
+        <X size={18} />
+      </button>
+    </div>
+
+    <div class="dialogGrid">
+      <div class="largeQr">
+        {
+          qrImageUrl ? (
+            <img src={qrImageUrl} alt={`${organizerName} 微信二维码`} loading="lazy" decoding="async" />
+          ) : (
+            <div class="emptyQr">
+              <MessageCircle size={34} />
+              <span>二维码待配置</span>
+            </div>
+          )
+        }
+      </div>
+
+      <div class="noteStack">
+        <label>
+          <span>举办方字条</span>
+          <textarea rows="4" readonly>{organizerNote}</textarea>
+        </label>
+        <label>
+          <span>联系人字条</span>
+          <textarea rows="4" readonly data-contact-note>{contactNote}</textarea>
+        </label>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<script define:vars={{ contactNote, subscribeNote, reportNote }}>
+  const noteByAction = {
+    subscribe: subscribeNote || contactNote,
+    contact: contactNote,
+    report: reportNote || contactNote
+  };
+
+  const labelByAction = {
+    subscribe: "Subscribe",
+    contact: "联系活动者",
+    report: "Report Event"
+  };
+
+  document.querySelectorAll("[data-open-organizer-contact]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const dialog = document.getElementById(button.getAttribute("aria-controls"));
+      const action = button.getAttribute("data-action-kind") || "contact";
+      if (!(dialog instanceof HTMLDialogElement)) return;
+
+      const label = dialog.querySelector("[data-contact-dialog-label]");
+      const note = dialog.querySelector("[data-contact-note]");
+      if (label) label.textContent = labelByAction[action] || "Contact";
+      if (note) note.textContent = noteByAction[action] || "";
+      dialog.showModal();
+    });
+  });
+
+  document.querySelectorAll("[data-close-organizer-contact]").forEach((button) => {
+    button.addEventListener("click", () => {
+      button.closest("dialog")?.close();
+    });
+  });
+
+  document.querySelectorAll("[data-organizer-contact-dialog]").forEach((dialog) => {
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) {
+        dialog.close();
+      }
+    });
+  });
+</script>
+
+<style>
+  .contactFormPanel {
+    display: grid;
+    gap: 12px;
+    padding: 20px;
+    border: 1px solid #dce3df;
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .panelHead {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+
+  .icon {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: #e6f2ed;
+    color: #1f7a5a;
+  }
+
+  h2,
+  p {
+    margin: 0;
+  }
+
+  h2 {
+    color: #17211b;
+    font-size: 22px;
+    letter-spacing: 0;
+  }
+
+  p {
+    margin-top: 5px;
+    color: #68736d;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .qrFrame,
+  .largeQr {
+    width: 100%;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid #dce3df;
+    border-radius: 8px;
+    background: #f7f5ee;
+  }
+
+  .qrFrame {
+    aspect-ratio: 1 / 1;
+    min-height: 260px;
+  }
+
+  .largeQr {
+    aspect-ratio: 1 / 1;
+    min-height: 360px;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+    background: #fff;
+  }
+
+  .emptyQr {
+    width: 100%;
+    height: 100%;
+    min-height: inherit;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 10px;
+    color: #68736d;
+    font-size: 14px;
+    font-weight: 750;
+    text-align: center;
+  }
+
+  .actions {
+    display: grid;
+    gap: 10px;
+  }
+
+  button {
+    font: inherit;
+  }
+
+  .actions button {
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 0;
+    border-radius: 8px;
+    background: #17211b;
+    color: #fff;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .actions .secondary {
+    border: 1px solid #dce3df;
+    background: #fff;
+    color: #68736d;
+  }
+
+  .contactDialog {
+    width: min(900px, calc(100% - 28px));
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: #fff;
+    color: #17211b;
+    box-shadow: 0 28px 80px rgba(23, 33, 27, 0.28);
+  }
+
+  .contactDialog::backdrop {
+    background: rgba(11, 20, 16, 0.56);
+  }
+
+  .contactForm {
+    display: grid;
+    gap: 18px;
+    padding: 22px;
+  }
+
+  .dialogHead {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .dialogHead p {
+    margin-bottom: 6px;
+    color: #1f7a5a;
+    font-size: 12px;
+    font-weight: 850;
+    text-transform: uppercase;
+  }
+
+  .dialogHead h2 {
+    font-size: 28px;
+    line-height: 1.15;
+  }
+
+  .iconButton {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    border: 1px solid #dce3df;
+    border-radius: 8px;
+    background: #fff;
+    color: #17211b;
+    cursor: pointer;
+  }
+
+  .dialogGrid {
+    display: grid;
+    grid-template-columns: minmax(320px, 1fr) minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .noteStack {
+    display: grid;
+    gap: 14px;
+  }
+
+  label {
+    display: grid;
+    gap: 7px;
+    color: #4f5b55;
+    font-size: 14px;
+    font-weight: 750;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    min-height: 42px;
+    border: 1px solid #dce3df;
+    border-radius: 8px;
+    padding: 0 11px;
+    background: #fff;
+    color: #17211b;
+    font: inherit;
+  }
+
+  textarea {
+    padding-top: 10px;
+    resize: none;
+  }
+
+  @media (max-width: 760px) {
+    .dialogGrid {
+      grid-template-columns: 1fr;
+    }
+
+    .largeQr {
+      min-height: 280px;
+    }
+  }
+</style>
