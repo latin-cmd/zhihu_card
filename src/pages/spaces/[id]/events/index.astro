@@ -1,0 +1,25 @@
+---
+import { ArrowLeft, CalendarDays, Inbox } from "@lucide/astro";
+import EventCard from "../../../../components/EventCard.astro";
+import { listEventCards, seedExistingEventsForCurrentAgent } from "../../../../lib/card-space-store";
+
+const spaceId = Astro.params.id ?? "";
+await seedExistingEventsForCurrentAgent(Astro.request);
+const result = await listEventCards(Astro.request, spaceId);
+if (!result) return Astro.redirect("/spaces", 302);
+---
+
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="当前 Agent Card 空间内的活动卡片。" /><title>Events · {result.space.name}</title></head><body><main>
+  <a class="back" href={`/spaces/${result.space.id}`}><ArrowLeft size={17} />返回 Card Space</a>
+  <header><div><p>PERSONAL EVENT CARDS</p><h1>Events</h1><span>{result.space.name} · Agent {result.space.agent_id}</span></div><div class="count"><CalendarDays size={20} />{result.events.length}</div></header>
+  {result.events.length ? <section class="grid">{result.events.map((row) => {
+    const event = row.payload as any;
+    const sourceLabel = row.source_provider === "activity-api" ? "活动 API" : row.source_provider === "zhihu-event" ? "知乎创作" : "项目内置";
+    return <EventCard {...event} sourceId={row.source_provider} sourceLabel={sourceLabel} href={`/spaces/${result.space.id}/events/${row.external_id}`} />;
+  })}</section> : <section class="empty"><Inbox size={30} /><h2>这个空间还没有活动</h2><p>新认领的 Agent Card 默认从一个空的 Events 空间开始。</p></section>}
+</main></body></html>
+
+<style>
+  :root{font-family:Inter,"PingFang SC",system-ui,sans-serif;color:#17211b;background:#f7f5ee}*{box-sizing:border-box}body{margin:0}main{width:min(1040px,calc(100% - 36px));margin:0 auto;padding:40px 0 86px}.back{display:inline-flex;align-items:center;gap:6px;color:#68736d;font-weight:800;text-decoration:none}header{display:flex;align-items:end;justify-content:space-between;gap:18px;margin:38px 0 25px}header p{margin:0;color:#1f7a5a;font-size:12px;font-weight:900;letter-spacing:.08em}h1{margin:6px 0;font-size:48px;letter-spacing:-.05em}header span{color:#68736d;font-size:14px}.count{min-width:58px;height:48px;display:flex;align-items:center;justify-content:center;gap:7px;border-radius:10px;background:#e6f2ed;color:#176c4d;font-size:18px;font-weight:900}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.empty{padding:32px;border:1px dashed #b9c8c0;border-radius:12px;background:#fff}.empty svg{color:#176c4d}.empty h2{margin:12px 0 5px}.empty p{margin:0;color:#68736d}@media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:580px){.grid{grid-template-columns:1fr}header{align-items:start}h1{font-size:40px}}
+</style>

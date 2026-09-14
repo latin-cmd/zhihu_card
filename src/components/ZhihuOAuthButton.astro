@@ -1,0 +1,31 @@
+---
+import { ShieldCheck } from "@lucide/astro";
+---
+
+<a class="zhihuOAuth" href="/api/oauth/zhihu/start">
+  <ShieldCheck size={15} />
+  <span>知乎官方登录</span>
+</a>
+
+<style>
+  .zhihuOAuth {
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 11px;
+    border: 1px solid rgba(255, 255, 255, 0.34);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.13);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 800;
+    text-decoration: none;
+    backdrop-filter: blur(14px);
+  }
+
+  .zhihuOAuth:hover {
+    background: #fff;
+    color: #17211b;
+  }
+</style>

@@ -1,0 +1,22 @@
+---
+import { ArrowLeft, BadgeCheck, Boxes, FileJson, Fingerprint } from "@lucide/astro";
+import { getPublicSpace, getSpace } from "../../lib/card-space-store";
+
+const spaceId = Astro.params.id ?? "";
+const ownerSpace = await getSpace(Astro.request, spaceId);
+const space = ownerSpace ?? await getPublicSpace(spaceId);
+if (!space) return Astro.redirect("/spaces", 302);
+---
+
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>{space.name} | 绒屿</title></head><body><main>
+  <a class="back" href={ownerSpace ? "/spaces" : "/a2a"}><ArrowLeft size={17} />{ownerSpace ? "我的 Card Spaces" : "公开 A2A Spaces"}</a>
+  <header><div class="avatar"><Fingerprint size={31} /></div><div><p>{space.provider} · {space.auth_mode}</p><h1>{space.name}</h1><span>Agent {space.agent_id}</span></div></header>
+  <section class="root"><div class="sectionTitle"><span><BadgeCheck size={19} />公开身份凭证</span><a href={`/api/spaces/${space.id}/agent-card`} target="_blank"><FileJson size={16} />查看签名 JSON</a></div><h2>Agent Card v{space.card_version ?? 1}</h2><p>由本地 ES256 签发；Agent Card 用于验证该公开空间的身份和接口声明，不含知乎 Access Secret。</p><dl><div><dt>Card ID</dt><dd>{space.card_id}</dd></div><div><dt>签发时间</dt><dd>{space.card_issued_at}</dd></div><div><dt>可见性</dt><dd>public</dd></div><div><dt>来源</dt><dd>crito-local-issuer</dd></div></dl></section>
+  <section><div class="sectionTitle"><span><Boxes size={19} />Public Skills</span><em>所有 Spaces 共用</em></div><div class="cards"><article><small>PUBLIC SKILL · POST</small><h3>Add Card</h3><p>向当前 Space 添加通用 Card。</p><a href="/api/skills/card-space-add-card" target="_blank">查看 Skill</a></article><article><small>PUBLIC SKILL · DELETE</small><h3>Delete Card</h3><p>删除当前 Space 中指定的非身份 Card。</p><a href="/api/skills/card-space-delete-card" target="_blank">查看 Skill</a></article><article><small>PUBLIC SKILL · ZHIHU</small><h3>Zhihu to Card Events</h3><p>将确认后的知乎创作抽象为来源 Card 和详情 Event。</p><a href="/api/skills/zhihu-credential-to-card-events" target="_blank">查看 Skill</a></article></div></section>
+  <section><div class="sectionTitle"><span><Boxes size={19} />空间卡片</span><div class="sectionActions"><em>{space.cards.length} 张</em><a href={`/spaces/${space.id}/events`}>进入 Events</a></div></div><div class="cards">{space.cards.map((card: any) => <article><small>{card.card_type ?? "untyped"} · {card.source_provider}</small><h3>{card.title}</h3><p>{card.summary}</p></article>)}</div></section>
+</main></body></html>
+
+<style>
+  :root { font-family: Inter, "PingFang SC", system-ui, sans-serif; color: #17211b; background:#f7f5ee; } *{box-sizing:border-box} body{margin:0} main{width:min(860px,calc(100% - 36px));margin:0 auto;padding:42px 0 88px}.back{display:inline-flex;align-items:center;gap:6px;color:#68736d;font-weight:800;text-decoration:none}header{display:flex;align-items:center;gap:16px;margin:38px 0 28px}.avatar{width:64px;height:64px;display:grid;place-items:center;border-radius:14px;color:#176c4d;background:#e6f2ed}header p,small{margin:0;color:#1f7a5a;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}h1{margin:5px 0;font-size:36px;letter-spacing:-.04em}header span,section p{color:#68736d}.root,article{border:1px solid #dce3df;border-radius:12px;background:#fff}.root{padding:25px}.sectionTitle{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#176c4d;font-weight:850}.sectionTitle span,.sectionTitle a{display:inline-flex;align-items:center;gap:7px}.sectionTitle a,article a{color:#176c4d;font-size:14px;font-weight:800;text-decoration:none}.sectionActions{display:flex;align-items:center;gap:12px}.sectionActions a{padding:7px 10px;border-radius:7px;background:#e6f2ed}h2{margin:20px 0 6px}.root p{margin:0;line-height:1.7}dl{display:grid;gap:1px;margin:22px 0 0;overflow:hidden;border:1px solid #e3e8e4;border-radius:8px;background:#e3e8e4}dl div{display:grid;grid-template-columns:110px 1fr;padding:10px 12px;background:#fafbf9}dt{color:#68736d;font-weight:800}dd{margin:0;overflow-wrap:anywhere;font-size:14px}section+section{margin-top:30px}em{color:#68736d;font-size:13px;font-style:normal}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:12px}article{padding:18px}article h3{margin:7px 0}article p{margin:0 0 12px;line-height:1.6;font-size:14px}@media(max-width:520px){dl div{grid-template-columns:1fr;gap:4px}}
+</style>

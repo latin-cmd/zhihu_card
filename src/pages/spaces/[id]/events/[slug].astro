@@ -1,0 +1,33 @@
+---
+import { ArrowLeft, CalendarDays, MapPin, ShieldCheck } from "@lucide/astro";
+import EventLocationBlock from "../../../../components/EventLocationBlock.astro";
+import EventOrganizerPanel from "../../../../components/EventOrganizerPanel.astro";
+import EventRegistrationPanel from "../../../../components/EventRegistrationPanel.astro";
+import { getEventCard } from "../../../../lib/card-space-store";
+
+const result = await getEventCard(Astro.request, Astro.params.id ?? "", Astro.params.slug ?? "");
+if (!result) { Astro.response.status = 404; }
+const event = result?.card.payload as any;
+const isContentCard = event?.cardKind === "zhihu_content" || event?.cardKind === "topic";
+---
+
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>{event ? `${event.title} | Events` : "活动不存在"}</title></head><body><main>
+  {result && event ? <>
+    <a class="back" href={`/spaces/${result.space.id}/events`}><ArrowLeft size={17} />返回我的 Events</a>
+    <div class="layout"><article>
+      <div class="source">来源 · {result.card.source_provider}</div>
+      <h1>{event.title}</h1>
+      <div class="meta"><span><CalendarDays size={17} />{event.date} · {event.time}</span><span><MapPin size={17} />{event.locationName ?? event.venue}</span></div>
+      <section><h2>{isContentCard ? "Card Content" : "About Event"}</h2>{(event.about ?? []).map((paragraph: string) => <p>{paragraph}</p>)}{(event.sections ?? []).map((part: any) => <div><h3>{part.title}</h3><p>{part.body}</p></div>)}{event.sourceUrl && <p><a class="sourceLink" href={event.sourceUrl} target="_blank" rel="noreferrer">打开知乎原文</a></p>}</section>
+      {!isContentCard && <EventLocationBlock name={event.locationName ?? event.venue} address={event.locationAddress ?? event.venue} />}
+      <div class="ownership"><ShieldCheck size={17} /><span>归属 Agent {result.space.agent_id}</span><b>{result.card.visibility}</b></div>
+    </article><aside>
+      {isContentCard ? <section class="contentPanel"><small>CONTENT CARD</small><h2>{event.contentType ?? event.category}</h2><p>此详情层同步自知乎来源卡，原文仍在知乎。</p>{event.sourceUrl && <a class="sourceLink" href={event.sourceUrl} target="_blank" rel="noreferrer">前往知乎</a>}</section> : <><EventRegistrationPanel eventSlug={event.slug} eventTitle={event.title} category={event.category} venue={event.locationName ?? event.venue} date={event.date} time={event.time} status={event.registrationStatus} note={event.registrationNote} action={event.registrationAction} priceLabel={event.priceLabel} /><EventOrganizerPanel presentedBy={event.presentedBy ?? event.host} /></>}
+    </aside></div>
+  </> : <section><h1>活动不存在</h1><p>该活动不属于当前 Agent Card 空间，或你无权访问。</p><a class="back" href="/events"><ArrowLeft size={17} />返回 Events</a></section>}
+</main></body></html>
+
+<style>
+  :root{font-family:Inter,"PingFang SC",system-ui,sans-serif;color:#17211b;background:#f7f5ee}*{box-sizing:border-box}body{margin:0}main{width:min(1120px,calc(100% - 36px));margin:0 auto;padding:42px 0 88px}.back{display:inline-flex;align-items:center;gap:6px;color:#68736d;font-weight:800;text-decoration:none}.layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:30px;align-items:start}.layout>article{min-width:0}.layout>aside{display:grid;gap:16px;margin-top:38px}.source{width:max-content;margin-top:38px;padding:7px 10px;border-radius:999px;background:#e6f2ed;color:#176c4d;font-size:12px;font-weight:900}h1{margin:16px 0;font-size:clamp(40px,7vw,68px);line-height:1;letter-spacing:-.05em}.meta{display:flex;flex-wrap:wrap;gap:10px}.meta span{display:inline-flex;align-items:center;gap:7px;padding:9px 11px;border:1px solid #dce3df;border-radius:999px;background:#fff;color:#4f5b55;font-weight:750}section{margin-top:42px}section h2{font-size:27px}section p{color:#4f5b55;line-height:1.8}section div{margin-top:24px}.sourceLink{display:inline-flex;margin-top:12px;padding:9px 12px;border-radius:8px;background:#e6f2ed;color:#176c4d;font-weight:850;text-decoration:none}.contentPanel{margin:0;padding:20px;border:1px solid #dce3df;border-radius:10px;background:#fff}.contentPanel small{color:#1f7a5a;font-weight:900;letter-spacing:.08em}.contentPanel h2{margin:10px 0;font-size:22px}.contentPanel p{margin:0}.ownership{display:flex;align-items:center;gap:8px;margin-top:34px;padding:15px;border:1px solid #dce3df;border-radius:10px;background:#fff;color:#68736d;font-size:13px}.ownership svg{color:#176c4d}.ownership b{margin-left:auto;color:#176c4d;text-transform:uppercase}@media(max-width:850px){.layout{grid-template-columns:1fr}.layout>aside{margin-top:0}}
+</style>

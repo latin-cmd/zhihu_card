@@ -1,4 +1,0 @@
-{$DIRECTUS_HOST} {
-  encode gzip zstd
-  reverse_proxy directus:8055
-}

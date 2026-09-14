@@ -7,10 +7,11 @@ interface Props {
   venue: string;
   date: string;
   time: string;
-  cover: string;
   priceLabel?: string;
   statusLabel?: string;
   attendeeCount?: number;
+  sourceId: string;
+  sourceLabel: string;
   href?: string;
 }
 
@@ -20,20 +21,26 @@ const {
   venue,
   date,
   time,
-  cover,
   priceLabel,
   statusLabel,
   attendeeCount,
+  sourceId,
+  sourceLabel,
   href = "#"
 } = Astro.props;
 ---
 
-<a class="eventCard" href={href}>
-  <div class="cover">
-    <img src={cover} alt={`Cover image for ${title}`} loading="lazy" />
-    {statusLabel && <span class="status">{statusLabel}</span>}
-  </div>
+<a
+  class="eventCard"
+  href={href}
+  data-card-kind="event"
+  data-card-source={sourceId}
+>
   <div class="body">
+    <div class="sourceRow">
+      <span class="source">来源 · {sourceLabel}</span>
+      {statusLabel && <span class="status">{statusLabel}</span>}
+    </div>
     <div class="dateRow">
       <span><CalendarDays size={15} />{date}</span>
       <span>{time}</span>
@@ -72,39 +79,39 @@ const {
     box-shadow: 0 14px 34px rgba(23, 33, 27, 0.1);
   }
 
-  .cover {
-    position: relative;
-    aspect-ratio: 16 / 10;
-    overflow: hidden;
-    background: #edf1ee;
+  .sourceRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
   }
 
-  img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: cover;
-  }
-
+  .source,
   .status {
-    position: absolute;
-    top: 12px;
-    right: 12px;
     min-height: 28px;
     display: inline-flex;
     align-items: center;
     padding: 0 10px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.92);
-    color: #17211b;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 800;
+  }
+
+  .source {
+    background: #e6f2ed;
+    color: #176c4d;
+  }
+
+  .status {
+    background: #f1f2ef;
+    color: #4f5b55;
   }
 
   .body {
     display: grid;
     gap: 9px;
-    padding: 15px;
+    height: 100%;
+    padding: 17px;
   }
 
   .dateRow,

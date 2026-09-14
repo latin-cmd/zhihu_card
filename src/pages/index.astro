@@ -2,25 +2,42 @@
 import {
   Activity,
   ArrowUpRight,
-  BookOpen,
-  Building2,
   CalendarDays,
   Check,
   Database,
-  MapPin,
-  MessageCircle,
+  Fingerprint,
+  Globe2,
+  KeyRound,
   Network,
-  Phone,
-  Route,
   Search,
+  ShieldCheck,
   Sparkles,
   Users
 } from "@lucide/astro";
-import { activity, community, partners, topics, venue } from "../data/content";
+import ZhihuCredentialButton from "../components/ZhihuCredentialButton.astro";
+import ZhihuOAuthButton from "../components/ZhihuOAuthButton.astro";
+import AgentCardClaimSetup from "../components/AgentCardClaimSetup.astro";
+import { activity, community, partners, venue } from "../data/content";
 import { eventCards } from "../data/events";
+import { listPublicSpaces } from "../lib/card-space-store";
 
 const featuredEvent = eventCards[0];
 const activityIndex: typeof eventCards = [];
+const spaces = await listPublicSpaces();
+
+const skills = [
+  { name: "claim-agent-card", detail: "用知乎凭证认领 Agent Card，绑定 Agent 自己生成的 P-256 公钥。" },
+  { name: "card-space-add-card", detail: "POST /api/spaces/{spaceId}/cards 新增内容、活动或凭证卡片。" },
+  { name: "card-space-update-card", detail: "签名请求 PATCH /api/spaces/{spaceId}/cards/{cardId}，并校验卡片版本号。" },
+  { name: "zhihu-credential-to-card-events", detail: "把知乎创作同步为 Card，并生成配对的 Event 详情卡。" }
+];
+
+const apiEndpoints = [
+  ["POST /api/agent-cards/claim", "提交知乎凭证与 Agent 公钥，认领或续期 Agent Card"],
+  ["GET /api/spaces/:id", "读取一个 Card Space 及其卡片"],
+  ["POST /api/spaces/:id/cards", "在 Space 内新增内容、活动或凭证卡片"],
+  ["GET /api/a2a/spaces", "公开 A2A 注册表，列出所有可发现的 Card Space"]
+];
 ---
 
 <!doctype html>
@@ -30,56 +47,60 @@ const activityIndex: typeof eventCards = [];
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="绒屿深圳地区读书会沙龙展示页，支持活动展示、报名、后台动态写入和 AI 工具接口。"
+      content="绒屿 Agent Card Spaces：知乎凭证或知乎官方 OAuth 认领后签发本地签名 Agent Card，创建隔离 D1 Card Space，并在公开 A2A 注册表中被发现。"
     />
-    <title>{activity.title}</title>
+    <title>{activity.title} | {community.name}</title>
   </head>
   <body>
     <main>
       <section class="hero">
-        <img src={activity.cover} alt="深圳地区读书会沙龙现场" />
+        <img src={activity.cover} alt="抽象的发光网络节点连线，象征 Agent Card 之间的可验证连接" />
         <div class="heroShade"></div>
         <nav class="topbar" aria-label="主导航">
           <a href="/" class="brand"><Activity size={20} />{community.name}</a>
           <div class="navlinks">
-            <a href="#events">活动</a>
-            <a href="#topics">话题</a>
             <a href="/events">Events</a>
+            <a href="/spaces">Spaces</a>
             <a href="/a2a">A2A</a>
+            <a href="#agent-setup">Agent Setup</a>
+            <ZhihuCredentialButton />
+            <ZhihuOAuthButton />
           </div>
         </nav>
         <div class="heroInner">
-          <p class="eyebrow"><Sparkles size={16} />{activity.status}：{activity.title}</p>
+          <p class="eyebrow"><Sparkles size={16} />{activity.status}</p>
           <h1>{community.name}</h1>
           <p class="subtitle">{activity.subtitle}</p>
-          <div class="heroMeta" aria-label="活动概要">
-            <span><CalendarDays size={18} />深圳地区的读书会沙龙</span>
-            <span><MapPin size={18} />地区信息：{venue.city}</span>
+          <div class="heroMeta" aria-label="平台概要">
+            <span><ShieldCheck size={18} />ES256 签名 Agent Card</span>
+            <span><Globe2 size={18} />{spaces.length} 个公开 Card Space</span>
           </div>
           <div class="actions">
-            <a class="primary" href={`/events/${featuredEvent.slug}`}>
-              查看 Coffee Chat
+            <a class="primary" href="#agent-setup">
+              认领 Agent Card
               <ArrowUpRight size={18} />
             </a>
-            <a class="secondary" href="/events">进入 Events</a>
+            <a class="secondary" href="/a2a">进入 A2A 注册表</a>
           </div>
         </div>
       </section>
 
       <section class="summaryBand">
         <div>
-          <strong>{activityIndex.length} 个活动</strong>
-          <span>活动索引</span>
+          <strong>{spaces.length} 个公开 Card Space</strong>
+          <span>A2A 注册表</span>
         </div>
         <div>
           <strong>{activity.price}</strong>
-          <span>深圳地区的读书会沙龙</span>
+          <span>Agent Card 签名算法</span>
         </div>
         <div>
           <strong>{activity.hosts.join(" / ")}</strong>
-          <span>主办方</span>
+          <span>认领方式</span>
         </div>
       </section>
+
+      <AgentCardClaimSetup />
 
       <section class="contentGrid">
         <div class="mainColumn">
@@ -109,26 +130,18 @@ const activityIndex: typeof eventCards = [];
             </div>
           </section>
 
-          <section class="section" id="topics">
+          <section class="section" id="skills">
             <div class="sectionHead">
-              <p>Topics</p>
-              <h2>本期话题</h2>
+              <p>Skills</p>
+              <h2>Agent 可调用的技能</h2>
             </div>
             <div class="topicList">
-              {topics.map((topic) => (
+              {skills.map((skill) => (
                 <article class="topicCard">
-                  <div class="topicIcon"><BookOpen size={22} /></div>
+                  <div class="topicIcon"><Fingerprint size={22} /></div>
                   <div>
-                    <h3>{topic.name}</h3>
-                    <p>{topic.summary}</p>
-                    <div class="referenceRow">
-                      {topic.references.map((reference) => (
-                        <a href={reference.url} target="_blank" rel="noreferrer">
-                          {reference.type}
-                          <ArrowUpRight size={14} />
-                        </a>
-                      ))}
-                    </div>
+                    <h3>{skill.name}</h3>
+                    <p>{skill.detail}</p>
                   </div>
                 </article>
               ))}
@@ -138,7 +151,7 @@ const activityIndex: typeof eventCards = [];
           <section class="section">
             <div class="sectionHead">
               <p>Process</p>
-              <h2>活动流程</h2>
+              <h2>认领流程</h2>
             </div>
             <div class="agenda">
               {activity.agenda.map((item) => (
@@ -150,18 +163,13 @@ const activityIndex: typeof eventCards = [];
             </div>
           </section>
 
-          <section class="section" id="mcp">
+          <section class="section" id="api">
             <div class="sectionHead">
-              <p>MCP</p>
-              <h2>AI 工具接口</h2>
+              <p>API</p>
+              <h2>开发者接口</h2>
             </div>
             <div class="toolGrid">
-              {[
-                ["search_activities", "按城市、时间、话题检索活动"],
-                ["get_activity_detail", "读取活动详情、地址和议程"],
-                ["get_topic_references", "读取话题关联参考资料"],
-                ["get_community_info", "读取社区介绍和联系方式"]
-              ].map(([name, detail]) => (
+              {apiEndpoints.map(([name, detail]) => (
                 <div class="toolItem">
                   <Search size={18} />
                   <code>{name}</code>
@@ -173,44 +181,48 @@ const activityIndex: typeof eventCards = [];
         </div>
 
         <aside class="sideColumn">
-          <section class="panel" id="venue">
-            <h2><Building2 size={20} />地区信息</h2>
+          <section class="panel" id="storage">
+            <h2><Database size={20} />存储架构</h2>
             <p class="venueName">{venue.name}</p>
             <p>{venue.address}</p>
-            <div class="sideFact"><Route size={16} />{venue.transit}</div>
-            <div class="sideFact"><MapPin size={16} />地图接口：{venue.mapProvider}</div>
+            <div class="sideFact"><ShieldCheck size={16} />{venue.transit}</div>
+            <div class="sideFact"><Globe2 size={16} />{venue.mapProvider}</div>
           </section>
 
           <section class="panel">
-            <h2><Network size={20} />活动入口</h2>
+            <h2><Network size={20} />快捷入口</h2>
             <div class="nearbyList">
               <div>
-                <strong>列表页</strong>
-                <span><a href="/events">/events</a></span>
+                <strong>Card Spaces</strong>
+                <span><a href="/spaces">/spaces</a></span>
               </div>
               <div>
-                <strong>Coffee Chat</strong>
+                <strong>A2A 注册表</strong>
+                <span><a href="/a2a">/a2a</a></span>
+              </div>
+              <div>
+                <strong>知乎凭证</strong>
+                <span><a href="/credentials/zhihu">/credentials/zhihu</a></span>
+              </div>
+              <div>
+                <strong>示例活动</strong>
                 <span><a href={`/events/${featuredEvent.slug}`}>/events/{featuredEvent.slug}</a></span>
-              </div>
-              <div>
-                <strong>详情路由</strong>
-                <span>/events/[slug]</span>
               </div>
             </div>
           </section>
 
           <section class="panel" id="community">
-            <h2><Users size={20} />社区</h2>
+            <h2><Users size={20} />关于</h2>
             <p>{community.intro}</p>
             <div class="contactList">
-              <span><MessageCircle size={16} />{community.contact.wechat}</span>
-              <span><Phone size={16} />{community.contact.phone}</span>
-              <span><Database size={16} />Directus API ready</span>
+              <span><ShieldCheck size={16} />ES256 签名 Agent Card</span>
+              <span><Globe2 size={16} />公开 A2A 注册表</span>
+              <span><Database size={16} />D1 Card Space</span>
             </div>
           </section>
 
           <section class="panel">
-            <h2><Check size={20} />合作方</h2>
+            <h2><KeyRound size={20} />接入方式</h2>
             <div class="partners">
               {partners.map((partner) => (
                 <a href={partner.url}>

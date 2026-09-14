@@ -1,0 +1,27 @@
+---
+import { ArrowLeft, ArrowUpRight, Boxes, KeyRound, ShieldCheck } from "@lucide/astro";
+import { listSpaces } from "../../lib/card-space-store";
+
+const spaces = await listSpaces(Astro.request);
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Card Spaces | 绒屿</title></head>
+  <body>
+    <main>
+      <a class="back" href="/"><ArrowLeft size={17} />返回社区</a>
+      <header><p>YOUR CARD SPACES</p><h1>一个连接，一个隔离空间。</h1><span>凭证属于空间；Agent Card 是本地签发的身份根。卡片本身不含 Access Secret。</span></header>
+      {spaces.length ? <section class="grid">
+        {spaces.map((space) => <a class="space" href={`/spaces/${space.id}`}>
+          <div class="icon"><Boxes size={24} /></div>
+          <div><small>{space.provider} · {space.auth_mode}</small><h2>{space.name}</h2><p>Agent {space.agent_id}</p><div class="meta"><span><ShieldCheck size={14} />Agent Card v{space.card_version ?? 1}</span><ArrowUpRight size={17} /></div></div>
+        </a>)}
+      </section> : <section class="empty"><KeyRound size={28} /><h2>还没有 Card Space</h2><p>先添加一个知乎 Access Secret，系统会签发首张 Agent Card 并创建隔离空间。</p><a href="/credentials/zhihu">添加知乎凭证</a></section>}
+    </main>
+  </body>
+</html>
+
+<style>
+  :root { font-family: Inter, "PingFang SC", system-ui, sans-serif; color: #17211b; background: #f7f5ee; } * { box-sizing: border-box; } body { margin: 0; } main { width: min(980px, calc(100% - 36px)); margin: 0 auto; padding: 42px 0 88px; } .back { display: inline-flex; align-items: center; gap: 6px; color: #68736d; font-weight: 800; text-decoration: none; } header { margin: 40px 0 26px; max-width: 720px; } header p, small { color: #1f7a5a; font-size: 12px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; } h1 { margin: 8px 0 12px; font-size: clamp(32px, 6vw, 56px); letter-spacing: -.05em; } header span, .space p, .empty p { color: #68736d; line-height: 1.7; } .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; } .space { display: grid; grid-template-columns: 48px 1fr; gap: 15px; padding: 21px; border: 1px solid #dce3df; border-radius: 12px; color: inherit; background: #fff; text-decoration: none; transition: transform .16s ease, box-shadow .16s ease; } .space:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(23,33,27,.1); } .icon { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 10px; color: #176c4d; background: #e6f2ed; } h2 { margin: 5px 0; font-size: 20px; } .space p { margin: 0; overflow-wrap: anywhere; font-size: 13px; } .meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 17px; color: #176c4d; font-size: 13px; font-weight: 800; } .meta span { display: inline-flex; align-items: center; gap: 5px; } .empty { max-width: 560px; padding: 28px; border: 1px dashed #b9c8c0; border-radius: 12px; background: #fff; } .empty svg { color: #176c4d; } .empty a { display: inline-flex; margin-top: 8px; padding: 10px 13px; border-radius: 8px; background: #17211b; color: #fff; font-weight: 800; text-decoration: none; }
+</style>

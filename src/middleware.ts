@@ -12,7 +12,11 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const response = await next();
   const { pathname } = context.url;
 
-  if (pathname === "/a2a" || pathname === "/a2a/" || pathname.startsWith("/a2a/registry/")) {
+  if (
+    pathname.startsWith("/credentials/") ||
+    pathname.startsWith("/api/credentials/") ||
+    pathname === "/api/spaces"
+  ) {
     const headers = new Headers(response.headers);
     for (const [key, value] of Object.entries(noStoreHeaders)) {
       headers.set(key, value);

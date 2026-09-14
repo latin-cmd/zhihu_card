@@ -1,0 +1,139 @@
+---
+import { Copy, KeyRound, ShieldCheck, TerminalSquare } from "@lucide/astro";
+---
+
+<section class="agentSetup" id="agent-setup" data-agent-setup>
+  <div class="setupIntro">
+    <p class="setupEyebrow"><KeyRound size={16} />Agent Card Setup</p>
+    <h2>让你的 Agent 认领自己的 Card Space</h2>
+    <p>复制一条 setup prompt 给外部 Agent，或者在当前浏览器生成不可导出的私钥并直接认领。两种方式都只把公钥发送到服务器。</p>
+  </div>
+
+  <div class="setupGrid">
+    <article class="setupCard promptCard">
+      <div class="cardHeading">
+        <span><TerminalSquare size={19} />交给你的 Agent</span>
+        <span class="recommended">推荐</span>
+      </div>
+      <p>适合 Codex、Claude Code 或其他能安全保存私钥的 Agent。</p>
+      <div class="promptBox">
+        <code data-setup-prompt>Fetch and execute the appropriate instructions to claim my Agent Card.</code>
+        <button type="button" data-copy-prompt aria-label="复制 Agent setup prompt"><Copy size={17} /><span>复制</span></button>
+      </div>
+      <a data-prompt-link href="/agent-setup/prompt.md" target="_blank" rel="noreferrer">查看公开 setup prompt</a>
+    </article>
+
+    <article class="setupCard directCard">
+      <div class="cardHeading"><span><KeyRound size={19} />在浏览器直接认领</span></div>
+      <p>私钥由 WebCrypto 生成，设为不可导出，并只保存在当前浏览器的 IndexedDB。</p>
+      <form data-claim-form>
+        <label for="agent-claim-secret">知乎 Access Secret</label>
+        <div class="claimRow">
+          <input id="agent-claim-secret" type="password" autocomplete="off" spellcheck="false" required placeholder="仅用于本次验证" />
+          <button type="submit">生成密钥并认领</button>
+        </div>
+      </form>
+      <div class="securityNote"><ShieldCheck size={16} /><span>如果要让外部 Agent 持有密钥，请使用左侧 setup prompt，不要使用浏览器认领。</span></div>
+      <p class="claimStatus" data-claim-status aria-live="polite"></p>
+      <a class="spaceLink" data-claimed-space hidden>打开已认领的 Card Space</a>
+    </article>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector("[data-agent-setup]");
+  if (root instanceof HTMLElement) {
+    const promptElement = root.querySelector("[data-setup-prompt]");
+    const copyButton = root.querySelector("[data-copy-prompt]");
+    const promptLink = root.querySelector("[data-prompt-link]");
+    const form = root.querySelector("[data-claim-form]");
+    const input = root.querySelector("#agent-claim-secret");
+    const status = root.querySelector("[data-claim-status]");
+    const spaceLink = root.querySelector("[data-claimed-space]");
+    const promptUrl = `${window.location.origin}/agent-setup/prompt.md`;
+    const promptText = `Fetch and execute the appropriate instructions to claim my Agent Card from [${promptUrl}](${promptUrl})`;
+    if (promptElement) promptElement.textContent = promptText;
+    if (promptLink instanceof HTMLAnchorElement) promptLink.href = promptUrl;
+
+    copyButton?.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(promptText);
+        const label = copyButton.querySelector("span");
+        if (label) label.textContent = "已复制";
+        window.setTimeout(() => { if (label) label.textContent = "复制"; }, 1800);
+      } catch {
+        if (status) status.textContent = "复制失败，请手动选中 setup prompt。";
+      }
+    });
+
+    function saveBrowserKey(record: Record<string, unknown>) {
+      return new Promise<void>((resolve, reject) => {
+        const request = indexedDB.open("crito-agent-credentials", 1);
+        request.onupgradeneeded = () => {
+          const database = request.result;
+          if (!database.objectStoreNames.contains("agentKeys")) database.createObjectStore("agentKeys", { keyPath: "id" });
+        };
+        request.onerror = () => reject(request.error ?? new Error("无法打开浏览器密钥库。"));
+        request.onsuccess = () => {
+          const database = request.result;
+          const transaction = database.transaction("agentKeys", "readwrite");
+          transaction.objectStore("agentKeys").put(record);
+          transaction.oncomplete = () => { database.close(); resolve(); };
+          transaction.onerror = () => { database.close(); reject(transaction.error ?? new Error("无法保存浏览器密钥。")); };
+        };
+      });
+    }
+
+    form?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!(form instanceof HTMLFormElement) || !(input instanceof HTMLInputElement)) return;
+      const submit = form.querySelector("button[type='submit']");
+      if (submit instanceof HTMLButtonElement) submit.disabled = true;
+      if (status) status.textContent = "正在本地生成不可导出的 P-256 私钥…";
+      try {
+        const accessSecret = input.value.trim();
+        if (!accessSecret) throw new Error("请输入知乎 Access Secret。");
+        const keyPair = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, false, ["sign", "verify"]);
+        const publicJwk = await crypto.subtle.exportKey("jwk", keyPair.publicKey);
+        if (status) status.textContent = "正在验证知乎凭证并认领 Agent Card…";
+        const response = await fetch("/api/agent-cards/claim", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ provider: "zhihu", proof: { accessSecret }, agentPublicKey: publicJwk })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "Agent Card 认领失败。");
+        const cardResponse = await fetch(`/api/spaces/${encodeURIComponent(result.spaceId)}/agent-card`, { cache: "no-store" });
+        if (!cardResponse.ok) throw new Error("无法核对签发后的 Agent Card。");
+        const agentCard = await cardResponse.json();
+        const extension = agentCard.extensions?.find((item: any) => item?.uri === "urn:crito:agent-request-signature:v1");
+        if (extension?.params?.keyId !== result.agentKeyId || extension?.params?.publicJwk?.x !== publicJwk.x || extension?.params?.publicJwk?.y !== publicJwk.y) {
+          throw new Error("Agent Card 中的公钥绑定核对失败。");
+        }
+        await saveBrowserKey({
+          id: result.agentKeyId,
+          privateKey: keyPair.privateKey,
+          publicJwk,
+          agentCardId: result.agentCardId,
+          agentId: result.agentId,
+          spaceId: result.spaceId,
+          createdAt: new Date().toISOString()
+        });
+        if (status) status.textContent = `认领完成。Agent Key ${result.agentKeyId} 已保存在当前浏览器。`;
+        if (spaceLink instanceof HTMLAnchorElement) {
+          spaceLink.href = `/spaces/${result.spaceId}`;
+          spaceLink.removeAttribute("hidden");
+        }
+      } catch (error) {
+        if (status) status.textContent = error instanceof Error ? error.message : "Agent Card 认领失败。";
+      } finally {
+        input.value = "";
+        if (submit instanceof HTMLButtonElement) submit.disabled = false;
+      }
+    });
+  }
+</script>
+
+<style>
+  .agentSetup{width:min(1180px,calc(100% - 36px));margin:0 auto;padding:56px 0 10px;color:#17211b}.setupIntro{max-width:760px}.setupEyebrow{display:flex;align-items:center;gap:7px;margin:0 0 10px;color:#1f7a5a;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.setupIntro h2{margin:0;font-size:clamp(30px,5vw,48px);line-height:1.05;letter-spacing:-.035em}.setupIntro>p:last-child{margin:18px 0 0;color:#68736d;line-height:1.7}.setupGrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:28px}.setupCard{min-width:0;padding:22px;border:1px solid #dce3df;border-radius:10px;background:#fff}.setupCard>p{color:#68736d;line-height:1.6}.cardHeading{display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:900}.cardHeading>span:first-child{display:flex;align-items:center;gap:8px}.recommended{padding:5px 8px;border-radius:999px;background:#e6f2ed;color:#176c4d;font-size:11px}.promptBox{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-top:18px;padding:8px;border:1px solid #dce3df;border-radius:8px;background:#f7f5ee}.promptBox code{min-width:0;padding:8px;color:#33423a;font-size:12px;line-height:1.55;overflow-wrap:anywhere}.promptBox button,.claimRow button{min-height:42px;border:0;border-radius:7px;background:#17211b;color:#fff;font:inherit;font-weight:800;cursor:pointer}.promptBox button{display:flex;align-items:center;justify-content:center;gap:6px;padding:0 12px}.promptCard>a,.spaceLink{display:inline-flex;margin-top:14px;color:#176c4d;font-size:13px;font-weight:800}.claimRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.directCard form{margin-top:17px}.directCard label{display:block;margin-bottom:7px;font-size:13px;font-weight:850}.claimRow input{min-width:0;min-height:44px;border:1px solid #cbd3cf;border-radius:7px;padding:0 11px;font:inherit}.claimRow input:focus{border-color:#1f7a5a;outline:3px solid #1f7a5a24}.claimRow button{padding:0 14px}.claimRow button:disabled{cursor:wait;opacity:.55}.securityNote{display:flex;align-items:flex-start;gap:7px;margin-top:13px;color:#68736d;font-size:12px;line-height:1.5}.securityNote svg{flex:none;color:#1f7a5a}.claimStatus{min-height:20px;margin:13px 0 0!important;color:#176c4d!important;font-size:13px}.spaceLink[hidden]{display:none}@media(max-width:820px){.setupGrid{grid-template-columns:1fr}}@media(max-width:540px){.claimRow,.promptBox{grid-template-columns:1fr}.promptBox button,.claimRow button{width:100%}}
+</style>

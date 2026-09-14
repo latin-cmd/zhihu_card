@@ -1,22 +1,10 @@
 import type { APIRoute } from "astro";
-import { createAndStoreSubmittedEvent, readSubmittedEvents } from "../../lib/activity-store";
+import { listCurrentD1Events } from "../../lib/card-space-store";
 
 export const prerender = false;
 
-export const GET: APIRoute = async () => {
-  const events = await readSubmittedEvents();
-  return Response.json({ events });
-};
-
-export const POST: APIRoute = async ({ request }) => {
-  try {
-    const input = await request.json();
-    const event = await createAndStoreSubmittedEvent(input);
-    return Response.json({ event }, { status: 201 });
-  } catch (error) {
-    return Response.json(
-      { error: error instanceof Error ? error.message : "Invalid event payload" },
-      { status: 400 }
-    );
-  }
+export const GET: APIRoute = async ({ request }) => {
+  const result = await listCurrentD1Events(request);
+  if (!result) return Response.json({ error: "请先认领 Agent Card" }, { status: 401, headers: { "Cache-Control": "no-store" } });
+  return Response.json({ spaceId: result.space.id, events: result.events.map((row) => ({ ...row.payload, cardId: row.id, visibility: row.visibility })) }, { headers: { "Cache-Control": "no-store" } });
 };

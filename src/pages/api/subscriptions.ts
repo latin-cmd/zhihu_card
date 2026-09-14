@@ -1,22 +1,19 @@
 import type { APIRoute } from "astro";
-import { createAndStoreSubscription, readSubscriptions } from "../../lib/activity-store";
+import { currentCardSpace, listD1Subscriptions, saveD1Subscription } from "../../lib/card-space-store";
 
 export const prerender = false;
 
-export const GET: APIRoute = async ({ url }) => {
+export const GET: APIRoute = async ({ url, request }) => {
   const eventSlug = url.searchParams.get("event_slug");
-  const subscriptions = await readSubscriptions();
-  const records = eventSlug
-    ? subscriptions.filter((record) => record.event_slug === eventSlug)
-    : subscriptions;
-
-  return Response.json({ subscriptions: records });
+  const records = await listD1Subscriptions(request, eventSlug);
+  return Response.json({ subscriptions: records ?? [] }, { status: records ? 200 : 401, headers: { "Cache-Control": "no-store" } });
 };
 
 export const POST: APIRoute = async ({ request }) => {
   try {
+    if (!await currentCardSpace(request)) return Response.json({ error: "请先认领 Agent Card" }, { status: 401 });
     const input = await request.json();
-    const record = await createAndStoreSubscription(input);
+    const record = await saveD1Subscription(request, input);
     return Response.json({ subscription: record }, { status: 201 });
   } catch (error) {
     return Response.json(
