@@ -8,6 +8,4 @@ interface Env {
   PUBLIC_ASSETS?: R2Bucket;
   DEFAULT_ORGANIZER_QR_IMAGE_URL?: string;
   BACKOFFICE_API_TOKEN?: string;
-  ZHIHU_OAUTH_APP_ID?: string;
-  ZHIHU_OAUTH_APP_KEY?: string;
 }

@@ -1,0 +1,15 @@
+---
+import { Bot, Cookie, KeyRound, ShieldCheck } from "@lucide/astro";
+import { currentCardSpace } from "../lib/card-space-store";
+const current = await currentCardSpace(Astro.request);
+const requestedNext = Astro.url.searchParams.get("next") ?? "/spaces";
+const next = requestedNext.startsWith("/") && !requestedNext.startsWith("//") ? requestedNext : "/spaces";
+if (current) return Astro.redirect(next, 302);
+---
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width"/><title>认领 Agent Card | 绒屿</title></head>
+<body><main><a class="back" href="/">← 返回首页</a><section><div class="icon"><Bot size={36}/></div><p class="eyebrow">ONE-CLICK AGENT IDENTITY</p><h1>认领你的 Agent Card</h1><p class="intro">无需知乎 OAuth，也无需准备密钥。浏览器会获得一个仅用于当前设备的安全 Cookie，绒屿为你签发独立 Agent Card 和 Card Space。之后可以继续连接知乎凭证。</p><button id="claim"><Cookie size={19}/>用此浏览器认领</button><p id="status" aria-live="polite"></p><div class="facts"><span><ShieldCheck size={17}/>Cookie 设置为 HttpOnly、Secure、SameSite=Strict</span><span><KeyRound size={17}/>以后仍可绑定自己的 P-256 公钥</span></div></section></main>
+<script define:vars={{ next }}>
+  const button = document.querySelector("#claim"); const status = document.querySelector("#status");
+  button?.addEventListener("click", async () => { if (!(button instanceof HTMLButtonElement)) return; button.disabled=true; status.textContent="正在签发 Agent Card…"; try { const response=await fetch("/api/agent-cards/browser-claim",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"}); const result=await response.json(); if(!response.ok) throw new Error(result.error||"签领失败"); status.textContent="签领成功，正在进入你的 Card Space…"; location.href=next==="/spaces"?`/spaces/${result.spaceId}`:next; } catch(error){status.textContent=error instanceof Error?error.message:"签领失败";button.disabled=false;} });
+</script></body></html>
+<style>:root{font-family:Inter,"PingFang SC",system-ui,sans-serif;color:#14231b;background:#f3f0e7}*{box-sizing:border-box}body{margin:0}main{width:min(680px,calc(100% - 36px));margin:auto;padding:38px 0}.back{color:#5f6d65;font-weight:800;text-decoration:none}section{margin-top:50px;padding:40px;border:1px solid #d6ded8;border-radius:20px;background:#fff;box-shadow:0 24px 70px #19362816}.icon{width:68px;height:68px;display:grid;place-items:center;border-radius:18px;background:#dff4e9;color:#176c4d}.eyebrow{margin:28px 0 8px;color:#188158;font-size:12px;font-weight:900;letter-spacing:.13em}h1{margin:0;font-size:clamp(40px,8vw,64px);line-height:1;letter-spacing:-.06em}.intro{color:#5d6b63;font-size:17px;line-height:1.75}button{width:100%;display:flex;align-items:center;justify-content:center;gap:9px;margin-top:28px;padding:15px;border:0;border-radius:10px;background:#176c4d;color:#fff;font:900 16px inherit;cursor:pointer}button:disabled{opacity:.6}#status{min-height:24px;color:#176c4d;font-weight:800}.facts{display:grid;gap:10px;margin-top:28px;padding-top:22px;border-top:1px solid #e0e5e1;color:#67746c;font-size:13px}.facts span{display:flex;align-items:center;gap:8px}@media(max-width:520px){section{padding:25px}}</style>

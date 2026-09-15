@@ -15,7 +15,6 @@ import {
   Users
 } from "@lucide/astro";
 import ZhihuCredentialButton from "../components/ZhihuCredentialButton.astro";
-import ZhihuOAuthButton from "../components/ZhihuOAuthButton.astro";
 import AgentCardClaimSetup from "../components/AgentCardClaimSetup.astro";
 import { activity, community, partners, venue } from "../data/content";
 import { eventCards } from "../data/events";
@@ -47,7 +46,7 @@ const apiEndpoints = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="绒屿 Agent Card Spaces：知乎凭证或知乎官方 OAuth 认领后签发本地签名 Agent Card，创建隔离 D1 Card Space，并在公开 A2A 注册表中被发现。"
+      content="绒屿 Agent Card Spaces：浏览器 Cookie 一键认领本地签名 Agent Card，创建隔离 D1 Card Space，并可选连接知乎内容。"
     />
     <title>{activity.title} | {community.name}</title>
   </head>
@@ -64,7 +63,7 @@ const apiEndpoints = [
             <a href="/a2a">A2A</a>
             <a href="#agent-setup">Agent Setup</a>
             <ZhihuCredentialButton />
-            <ZhihuOAuthButton />
+            <a class="cookieLogin" href="/login">Cookie 认领</a>
           </div>
         </nav>
         <div class="heroInner">
@@ -76,8 +75,8 @@ const apiEndpoints = [
             <span><Globe2 size={18} />{spaces.length} 个公开 Card Space</span>
           </div>
           <div class="actions">
-            <a class="primary" href="#agent-setup">
-              认领 Agent Card
+            <a class="primary" href="/login">
+              Cookie 认领 Agent Card
               <ArrowUpRight size={18} />
             </a>
             <a class="secondary" href="/a2a">进入 A2A 注册表</a>

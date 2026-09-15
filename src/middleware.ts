@@ -15,6 +15,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   if (
     pathname.startsWith("/credentials/") ||
     pathname.startsWith("/api/credentials/") ||
+    pathname === "/api/agent-cards/browser-claim" ||
     pathname === "/api/spaces"
   ) {
     const headers = new Headers(response.headers);

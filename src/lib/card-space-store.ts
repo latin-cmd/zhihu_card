@@ -221,10 +221,22 @@ async function issuer() {
 async function signedAgentCard(origin: string, agentId: string, spaceId: string, provider: string, version: number, agentSigningKey?: AgentSigningKey | null) {
   if (origin === "http://community.crito.top") origin = "https://community.crito.top";
   const currentIssuer = await issuer();
+  const browserSkills = [
+    { id: "card-space-add-card", name: "Add Card", description: "Add a generic card to this browser-claimed Card Space.", tags: ["cards", "create", provider], examples: [`POST ${origin}/api/spaces/${spaceId}/cards`] },
+    { id: "card-space-update-card", name: "Update Card", description: "Update a Card after binding an Agent-owned signing key.", tags: ["cards", "update", provider], examples: [`PATCH ${origin}/api/spaces/${spaceId}/cards/{cardId}`] },
+    { id: "card-space-delete-card", name: "Delete Card", description: "Delete a non-identity Card from this Space.", tags: ["cards", "delete", provider], examples: [`DELETE ${origin}/api/spaces/${spaceId}/cards/{cardId}`] }
+  ];
+  const legacySkills = [
+    { id: "claim-agent-card", name: "Claim Agent Card", description: "Claim or resume an Agent Card with a Zhihu proof and bind an Agent-owned public signing key.", tags: ["identity", "claim", "agent-card", provider], examples: [`POST ${origin}/api/agent-cards/claim`] },
+    { id: "card-space-add-card", name: "Add Card", description: "Add a generic card to this Card Space.", tags: ["cards", "create", provider], examples: [`POST ${origin}/api/spaces/${spaceId}/cards`] },
+    { id: "card-space-update-card", name: "Update Card", description: "Update a Card's local presentation through an Agent-signed request.", tags: ["cards", "update", provider], examples: [`PATCH ${origin}/api/spaces/${spaceId}/cards/{cardId}`] },
+    { id: "card-space-delete-card", name: "Delete Card", description: "Delete a non-identity card from this Card Space.", tags: ["cards", "delete", provider], examples: [`DELETE ${origin}/api/spaces/${spaceId}/cards/{cardId}`] },
+    { id: "zhihu-credential-to-card-events", name: "Zhihu to Card Events", description: "Import recent Zhihu creations as source cards and paired Event detail cards after credential claim.", tags: ["zhihu", "cards", "events", provider], examples: [`GET ${origin}/api/skills/zhihu-credential-to-card-events`] }
+  ];
   const body: JsonObject = {
     protocolVersion: "0.3.0",
-    name: provider === "zhihu" ? "知乎 Personal Agent" : "Personal Agent",
-    description: "A locally issued, verifiable identity credential for one publicly readable A2A Card Space. Provider secrets are never included.",
+    name: provider === "zhihu" ? "知乎 Personal Agent" : "My Knowledge Island Agent",
+    description: provider === "browser" ? "A browser-cookie claimed, locally signed identity for one isolated Card Space." : "A locally issued, verifiable identity credential for one publicly readable A2A Card Space. Provider secrets are never included.",
     version: `1.0.${version}`,
     preferredTransport: "HTTP+JSON",
     additionalInterfaces: [{ transport: "HTTP+JSON", url: `${origin}/api/spaces/${spaceId}` }],
@@ -246,13 +258,7 @@ async function signedAgentCard(origin: string, agentId: string, spaceId: string,
         canonicalRequest: "METHOD\\nPATH_WITH_QUERY\\nTIMESTAMP\\nNONCE\\nBASE64URL_SHA256_BODY"
       }
     }] : [],
-    skills: [
-      { id: "claim-agent-card", name: "Claim Agent Card", description: "Claim or resume an Agent Card with a Zhihu proof and bind an Agent-owned public signing key.", tags: ["identity", "claim", "agent-card", provider], examples: [`POST ${origin}/api/agent-cards/claim`] },
-      { id: "card-space-add-card", name: "Add Card", description: "Add a generic card to this Card Space.", tags: ["cards", "create", provider], examples: [`POST ${origin}/api/spaces/${spaceId}/cards`] },
-      { id: "card-space-update-card", name: "Update Card", description: "Update a Card's local presentation through an Agent-signed request.", tags: ["cards", "update", provider], examples: [`PATCH ${origin}/api/spaces/${spaceId}/cards/{cardId}`] },
-      { id: "card-space-delete-card", name: "Delete Card", description: "Delete a non-identity card from this Card Space.", tags: ["cards", "delete", provider], examples: [`DELETE ${origin}/api/spaces/${spaceId}/cards/{cardId}`] },
-      { id: "zhihu-credential-to-card-events", name: "Zhihu to Card Events", description: "Import recent Zhihu creations as source cards and paired Event detail cards after credential claim.", tags: ["zhihu", "cards", "events", provider], examples: [`GET ${origin}/api/skills/zhihu-credential-to-card-events`] }
-    ]
+    skills: provider === "browser" ? browserSkills : legacySkills
   };
   const protectedHeader = { alg: "ES256", typ: "JOSE", kid: currentIssuer.keyId, jku: `${origin}/api/agent-card-issuer/jwks.json` };
   const signingInput = `${bytesToBase64Url(new TextEncoder().encode(canonicalJson(protectedHeader)))}.${bytesToBase64Url(new TextEncoder().encode(canonicalJson(body)))}`;
@@ -407,6 +413,33 @@ async function createZhihuSpace(request: Request, accessSecret: string, dates: {
     await database.batch(statements);
     return { userId: matching.owner_user_id, sessionToken: newSessionToken, spaceId: matching.space_id, agentId: matching.agent_id, connectionId: matching.connection_id, agentCardId: matching.card_id, connectedAt: matching.connected_at, verifiedAt: dates.verifiedAt ?? now, createdSession: Boolean(newSessionToken), resumed: true };
   }
+  if (priorSession?.activeSpaceId) {
+    const browserSpace = await database.prepare(`SELECT s.id, s.owner_user_id, s.name, s.provider, s.status, s.created_at, s.agent_id,
+      p.auth_mode, p.id AS connection_id, p.connected_at, p.verified_at, p.credential_fingerprint,
+      ac.id AS card_id, ac.version AS card_version, ac.issued_at AS card_issued_at
+      FROM card_spaces s JOIN provider_connections p ON p.space_id=s.id
+      LEFT JOIN agent_cards ac ON ac.agent_id=s.agent_id AND ac.status='active'
+      WHERE s.id=? AND s.owner_user_id=? AND s.provider='browser' AND s.status='active' AND p.status='active'
+      ORDER BY ac.version DESC LIMIT 1`).bind(priorSession.activeSpaceId, priorSession.userId).first<SpaceRow>();
+    if (browserSpace) {
+      const cipher = await encryptSecret(accessSecret, browserSpace.connection_id);
+      await database.batch([
+        database.prepare("UPDATE provider_connections SET provider='zhihu', auth_mode='access_secret_cookie', secret_ciphertext=?, credential_fingerprint=?, verified_at=? WHERE id=?").bind(cipher, fingerprint, dates.verifiedAt ?? now, browserSpace.connection_id),
+        database.prepare("UPDATE agent_principals SET provider='zhihu', auth_mode='access_secret_cookie' WHERE id=? AND owner_user_id=?").bind(browserSpace.agent_id, priorSession.userId),
+        database.prepare("UPDATE card_spaces SET provider='zhihu', name='知乎 · Cookie Card Space' WHERE id=? AND owner_user_id=?").bind(browserSpace.id, priorSession.userId),
+        database.prepare("UPDATE agent_claims SET proof_type='zhihu_access_secret_cookie', proof_ref='zhihu' WHERE agent_id=? AND user_id=? AND status='active'").bind(browserSpace.agent_id, priorSession.userId),
+        database.prepare("UPDATE sessions SET active_space_id=? WHERE token_hash=?").bind(browserSpace.id, priorSession.tokenHash),
+        database.prepare("INSERT INTO audit_events (id, user_id, agent_id, space_id, action, created_at, metadata_json) VALUES (?, ?, ?, ?, 'browser.connection.upgraded_to_zhihu', ?, ?)").bind(randomId("aud_"), priorSession.userId, browserSpace.agent_id, browserSpace.id, now, JSON.stringify({ authMode: "access_secret_cookie" }))
+      ]);
+      const upgradedCard = await reissueAgentCard(database, {
+        id: browserSpace.id,
+        owner_user_id: priorSession.userId,
+        agent_id: browserSpace.agent_id,
+        provider: "zhihu"
+      }, origin, "agent_card.upgraded_with_zhihu_cookie");
+      return { userId: priorSession.userId, sessionToken: "", spaceId: browserSpace.id, agentId: browserSpace.agent_id, connectionId: browserSpace.connection_id, agentCardId: upgradedCard.id, connectedAt: browserSpace.connected_at, verifiedAt: dates.verifiedAt ?? now, createdSession: false, resumed: true };
+    }
+  }
   if (priorSession) {
     const existing = await latestSpace(database, priorSession.userId);
     if (existing) {
@@ -438,6 +471,44 @@ async function createZhihuSpace(request: Request, accessSecret: string, dates: {
   if (priorSession) statements.push(database.prepare("UPDATE sessions SET active_space_id = ? WHERE token_hash = ?").bind(spaceId, priorSession.tokenHash));
   await database.batch(statements);
   return { userId, sessionToken, spaceId, agentId, connectionId, agentCardId: cardId, connectedAt: dates.connectedAt ?? now, verifiedAt: dates.verifiedAt ?? now, createdSession: !priorSession, resumed: false };
+}
+
+export async function claimBrowserAgent(request: Request) {
+  if (!isSameOrigin(request)) return Response.json({ error: "跨站请求已拒绝。" }, { status: 403 });
+  const database = db();
+  if (!database) return Response.json({ error: "Card Space D1 尚未配置。" }, { status: 503 });
+  const existing = await currentCardSpace(request);
+  if (existing) {
+    return Response.json({ claimed: true, resumed: true, spaceId: existing.id, agentId: existing.agent_id, agentCardId: existing.card_id });
+  }
+
+  const now = new Date().toISOString();
+  const userId = randomId("usr_");
+  const sessionToken = randomId("ses_");
+  const agentId = randomId("agt_");
+  const spaceId = randomId("spc_");
+  const connectionId = randomId("con_");
+  const cardId = randomId("ac_");
+  const card = await signedAgentCard(new URL(request.url).origin, agentId, spaceId, "browser", 1);
+  const statements: D1PreparedStatement[] = [
+    database.prepare("INSERT INTO users (id, created_at) VALUES (?, ?)").bind(userId, now),
+    database.prepare("INSERT INTO sessions (token_hash, user_id, created_at, active_space_id) VALUES (?, ?, ?, ?)").bind(await sha256(sessionToken), userId, now, spaceId),
+    database.prepare("INSERT OR IGNORE INTO issuer_keys (key_id, alg, public_jwk, status, created_at) VALUES (?, 'ES256', ?, 'active', ?)").bind(card.keyId, JSON.stringify(card.publicJwk), now),
+    database.prepare("INSERT INTO agent_principals (id, owner_user_id, provider, auth_mode, status, created_at) VALUES (?, ?, 'browser', 'cookie', 'active', ?)").bind(agentId, userId, now),
+    database.prepare("INSERT INTO card_spaces (id, owner_user_id, agent_id, name, provider, status, created_at, visibility) VALUES (?, ?, ?, 'Browser · Card Space', 'browser', 'active', ?, 'public')").bind(spaceId, userId, agentId, now),
+    database.prepare("INSERT INTO agent_claims (id, user_id, agent_id, proof_type, proof_ref, status, claimed_at) VALUES (?, ?, ?, 'browser_cookie', NULL, 'active', ?)").bind(randomId("clm_"), userId, agentId, now),
+    database.prepare("INSERT INTO provider_connections (id, owner_user_id, agent_id, space_id, provider, auth_mode, secret_ciphertext, status, connected_at, verified_at, credential_fingerprint) VALUES (?, ?, ?, ?, 'browser', 'cookie', '', 'active', ?, ?, NULL)").bind(connectionId, userId, agentId, spaceId, now, now),
+    database.prepare("INSERT INTO agent_cards (id, agent_id, version, body_json, body_hash, signature_json, key_id, status, issued_at) VALUES (?, ?, 1, ?, ?, ?, ?, 'active', ?)").bind(cardId, agentId, JSON.stringify(card.body), card.bodyHash, JSON.stringify(card.signature), card.keyId, now),
+    database.prepare("INSERT INTO cards (id, space_id, owner_agent_id, source_provider, source_connection_id, external_id, card_type, title, summary, payload_json, created_at, updated_at, visibility) VALUES (?, ?, ?, 'crito-local-issuer', ?, ?, 'agent_identity', 'Agent Card', 'Browser-cookie claimed identity for this Card Space.', ?, ?, ?, 'public')").bind(randomId("card_"), spaceId, agentId, connectionId, cardId, JSON.stringify({ agentCardId: cardId, agentId, issuerKeyId: card.keyId }), now, now),
+    database.prepare("INSERT INTO cards (id, space_id, owner_agent_id, source_provider, source_connection_id, external_id, card_type, title, summary, payload_json, created_at, updated_at, visibility) VALUES (?, ?, ?, 'rongyu-default', NULL, 'welcome', 'content', '欢迎来到绒屿', '这是你的默认内容卡。你可以通过 Add Card Skill 发布自己的内容。', ?, ?, ?, 'public')").bind(randomId("card_"), spaceId, agentId, JSON.stringify({ kind: "welcome", editable: true }), now, now),
+    database.prepare("INSERT INTO cards (id, space_id, owner_agent_id, source_provider, source_connection_id, external_id, card_type, title, summary, payload_json, created_at, updated_at, visibility) VALUES (?, ?, ?, 'rongyu-default', NULL, 'getting-started', 'content', '开始使用 Card Space', '查看 Agent Card、绑定可选的 P-256 公钥，或连接知乎 Access Secret。', ?, ?, ?, 'public')").bind(randomId("card_"), spaceId, agentId, JSON.stringify({ kind: "getting_started", editable: true }), now, now),
+    database.prepare("INSERT INTO audit_events (id, user_id, agent_id, space_id, action, created_at, metadata_json) VALUES (?, ?, ?, ?, 'browser.agent.claimed', ?, ?)").bind(randomId("aud_"), userId, agentId, spaceId, now, JSON.stringify({ authMode: "browser_cookie" }))
+  ];
+  await database.batch(statements);
+  return Response.json({ claimed: true, resumed: false, spaceId, agentId, agentCardId: cardId }, {
+    status: 201,
+    headers: { "Cache-Control": "no-store", "Set-Cookie": secureCookie(sessionCookie, sessionToken, sessionLifetimeSeconds) }
+  });
 }
 
 async function syncZhihuCardsAfterClaim(created: Awaited<ReturnType<typeof createZhihuSpace>>, accessSecret: string) {
