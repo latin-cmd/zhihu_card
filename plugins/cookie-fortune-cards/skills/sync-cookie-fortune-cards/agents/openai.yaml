@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sync Cookie Fortune Cards"
+  short_description: "Create daily browser-context and fortune Card/Event pairs."
+  default_prompt: "Create or refresh today's cookie-context and entertainment fortune cards for my current Card Space."

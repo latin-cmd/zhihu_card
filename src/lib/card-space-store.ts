@@ -224,14 +224,16 @@ async function signedAgentCard(origin: string, agentId: string, spaceId: string,
   const browserSkills = [
     { id: "card-space-add-card", name: "Add Card", description: "Add a generic card to this browser-claimed Card Space.", tags: ["cards", "create", provider], examples: [`POST ${origin}/api/spaces/${spaceId}/cards`] },
     { id: "card-space-update-card", name: "Update Card", description: "Update a Card after binding an Agent-owned signing key.", tags: ["cards", "update", provider], examples: [`PATCH ${origin}/api/spaces/${spaceId}/cards/{cardId}`] },
-    { id: "card-space-delete-card", name: "Delete Card", description: "Delete a non-identity Card from this Space.", tags: ["cards", "delete", provider], examples: [`DELETE ${origin}/api/spaces/${spaceId}/cards/{cardId}`] }
+    { id: "card-space-delete-card", name: "Delete Card", description: "Delete a non-identity Card from this Space.", tags: ["cards", "delete", provider], examples: [`DELETE ${origin}/api/spaces/${spaceId}/cards/{cardId}`] },
+    { id: "sync-cookie-fortune-cards", name: "Cookie Fortune Cards", description: "Create daily browser-context and entertainment fortune Card/Event pairs.", tags: ["cookie", "cards", "events", "entertainment"], examples: [`POST ${origin}/api/plugins/cookie-fortune-cards/sync`] }
   ];
   const legacySkills = [
     { id: "claim-agent-card", name: "Claim Agent Card", description: "Claim or resume an Agent Card with a Zhihu proof and bind an Agent-owned public signing key.", tags: ["identity", "claim", "agent-card", provider], examples: [`POST ${origin}/api/agent-cards/claim`] },
     { id: "card-space-add-card", name: "Add Card", description: "Add a generic card to this Card Space.", tags: ["cards", "create", provider], examples: [`POST ${origin}/api/spaces/${spaceId}/cards`] },
     { id: "card-space-update-card", name: "Update Card", description: "Update a Card's local presentation through an Agent-signed request.", tags: ["cards", "update", provider], examples: [`PATCH ${origin}/api/spaces/${spaceId}/cards/{cardId}`] },
     { id: "card-space-delete-card", name: "Delete Card", description: "Delete a non-identity card from this Card Space.", tags: ["cards", "delete", provider], examples: [`DELETE ${origin}/api/spaces/${spaceId}/cards/{cardId}`] },
-    { id: "zhihu-credential-to-card-events", name: "Zhihu to Card Events", description: "Import recent Zhihu creations as source cards and paired Event detail cards after credential claim.", tags: ["zhihu", "cards", "events", provider], examples: [`GET ${origin}/api/skills/zhihu-credential-to-card-events`] }
+    { id: "zhihu-credential-to-card-events", name: "Zhihu to Card Events", description: "Import recent Zhihu creations as source cards and paired Event detail cards after credential claim.", tags: ["zhihu", "cards", "events", provider], examples: [`GET ${origin}/api/skills/zhihu-credential-to-card-events`] },
+    { id: "sync-cookie-fortune-cards", name: "Cookie Fortune Cards", description: "Create daily browser-context and entertainment fortune Card/Event pairs.", tags: ["cookie", "cards", "events", "entertainment"], examples: [`POST ${origin}/api/plugins/cookie-fortune-cards/sync`] }
   ];
   const body: JsonObject = {
     protocolVersion: "0.3.0",
@@ -320,7 +322,7 @@ async function reissueAgentCard(
     database.prepare("UPDATE agent_cards SET status='superseded', revoked_at=? WHERE agent_id=? AND status='active'").bind(now, space.agent_id),
     database.prepare("INSERT INTO agent_cards (id, agent_id, version, body_json, body_hash, signature_json, key_id, status, issued_at) VALUES (?, ?, ?, ?, ?, ?, ?, 'active', ?)").bind(cardId, space.agent_id, version, JSON.stringify(card.body), card.bodyHash, JSON.stringify(card.signature), card.keyId, now),
     database.prepare("UPDATE cards SET external_id=?, payload_json=?, updated_at=? WHERE space_id=? AND owner_agent_id=? AND card_type='agent_identity'").bind(cardId, JSON.stringify({ agentCardId: cardId, agentId: space.agent_id, issuerKeyId: card.keyId, agentSigningKeyId: signingKey?.id ?? null }), now, space.id, space.agent_id),
-    database.prepare("INSERT INTO audit_events (id, user_id, agent_id, space_id, action, created_at, metadata_json) VALUES (?, ?, ?, ?, ?, ?, ?)").bind(randomId("aud_"), space.owner_user_id, space.agent_id, space.id, action, now, JSON.stringify({ cardId, version, agentSigningKeyId: signingKey?.id ?? null, skills: ["claim-agent-card", "card-space-add-card", "card-space-update-card", "card-space-delete-card", "zhihu-credential-to-card-events"] }))
+    database.prepare("INSERT INTO audit_events (id, user_id, agent_id, space_id, action, created_at, metadata_json) VALUES (?, ?, ?, ?, ?, ?, ?)").bind(randomId("aud_"), space.owner_user_id, space.agent_id, space.id, action, now, JSON.stringify({ cardId, version, agentSigningKeyId: signingKey?.id ?? null, skills: ["claim-agent-card", "card-space-add-card", "card-space-update-card", "card-space-delete-card", "zhihu-credential-to-card-events", "sync-cookie-fortune-cards"] }))
   ]);
   return { id: cardId, agentId: space.agent_id, spaceId: space.id, version, body: card.body, agentKeyId: signingKey?.id ?? null };
 }

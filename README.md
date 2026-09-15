@@ -42,3 +42,7 @@ Apply every SQL file in `migrations/` before running a newly built Worker. For p
 - `POST /api/agent-cards/browser-claim` creates or resumes a browser-owned Agent Card and Card Space. The opaque session token is stored as an HttpOnly, Secure, SameSite=Strict cookie.
 - `/credentials/zhihu` can attach a verified Zhihu Access Secret to the current browser-owned Space. The same Agent identity and Space are retained and its Agent Card is reissued.
 - Supplying an Agent-owned P-256 public key remains optional for clients that need signed write requests.
+
+## Optional plugins
+
+`plugins/cookie-fortune-cards` is an isolated plugin package with its own manifest, runtime, source index, and Skill. After Cookie claim, its same-origin endpoint creates daily browser-context and entertainment fortune Card/Event pairs. It uses coarse language, platform and request-time signals only; it does not use IP location, GPS, usernames, full User-Agent strings, or cross-site Cookie data.

@@ -12,7 +12,8 @@ export const GET: APIRoute = async ({ params, url }) => {
     { id: "card-space-add-card", manifest: `${origin}/api/skills/card-space-add-card`, endpoint: `${origin}/api/spaces/${space.id}/cards` },
     { id: "card-space-update-card", manifest: `${origin}/api/skills/card-space-update-card`, endpoint: `${origin}/api/spaces/${space.id}/cards/{cardId}` },
     { id: "card-space-delete-card", manifest: `${origin}/api/skills/card-space-delete-card`, endpoint: `${origin}/api/spaces/${space.id}/cards/{cardId}` },
-    { id: "zhihu-credential-to-card-events", manifest: `${origin}/api/skills/zhihu-credential-to-card-events`, endpoint: `${origin}/api/spaces/${space.id}/cards` }
+    { id: "zhihu-credential-to-card-events", manifest: `${origin}/api/skills/zhihu-credential-to-card-events`, endpoint: `${origin}/api/spaces/${space.id}/cards` },
+    { id: "sync-cookie-fortune-cards", manifest: `${origin}/api/skills/sync-cookie-fortune-cards`, endpoint: `${origin}/api/plugins/cookie-fortune-cards/sync` }
   ];
   return Response.json({
     protocolVersion: "0.3.0",

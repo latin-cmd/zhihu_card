@@ -1,0 +1,9 @@
+{
+  "purpose": "Public source index for cultural inspiration and attribution; no source text is copied into generated cards.",
+  "sources": [
+    { "title": "周易·易经", "repository": "Chinese Text Project", "url": "https://ctext.org/book-of-changes/yi-jing/zh", "use": "Eight-trigram names and change-oriented framing" },
+    { "title": "周易", "repository": "Wikisource", "url": "https://zh.wikisource.org/wiki/%E6%98%93%E7%B6%93", "use": "Public cross-reference for the classical work" },
+    { "title": "礼记·月令", "repository": "Chinese Text Project", "url": "https://ctext.org/liji/yue-ling/zh", "use": "Seasonal and daily-rhythm framing" },
+    { "title": "淮南子·天文训", "repository": "Chinese Text Project", "url": "https://ctext.org/huainanzi/tian-wen-xun/zh", "use": "Time-cycle framing" }
+  ]
+}

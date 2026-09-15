@@ -1,0 +1,18 @@
+{
+  "name": "cookie-fortune-cards",
+  "version": "0.1.0",
+  "description": "Create daily browser-context and entertainment fortune Card/Event pairs for a Cookie-owned Card Space.",
+  "author": {
+    "name": "Rongyu Community"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Cookie Fortune Cards",
+    "shortDescription": "Turn coarse browser context into daily Card/Event pairs.",
+    "longDescription": "Uses a claimed browser session, coarse language/platform context, and request time to create an idempotent context pair and an entertainment-only daily fortune pair.",
+    "developerName": "Rongyu Community",
+    "category": "Productivity",
+    "capabilities": ["skills"],
+    "defaultPrompt": "Create or refresh today's browser-context and entertainment fortune cards in my current Card Space."
+  }
+}

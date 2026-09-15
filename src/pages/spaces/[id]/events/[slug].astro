@@ -8,7 +8,7 @@ import { getEventCard } from "../../../../lib/card-space-store";
 const result = await getEventCard(Astro.request, Astro.params.id ?? "", Astro.params.slug ?? "");
 if (!result) { Astro.response.status = 404; }
 const event = result?.card.payload as any;
-const isContentCard = event?.cardKind === "zhihu_content" || event?.cardKind === "topic";
+const isContentCard = event?.presentationMode === "content" || event?.cardKind === "zhihu_content" || event?.cardKind === "topic";
 ---
 
 <!doctype html>
@@ -19,11 +19,11 @@ const isContentCard = event?.cardKind === "zhihu_content" || event?.cardKind ===
       <div class="source">来源 · {result.card.source_provider}</div>
       <h1>{event.title}</h1>
       <div class="meta"><span><CalendarDays size={17} />{event.date} · {event.time}</span><span><MapPin size={17} />{event.locationName ?? event.venue}</span></div>
-      <section><h2>{isContentCard ? "Card Content" : "About Event"}</h2>{(event.about ?? []).map((paragraph: string) => <p>{paragraph}</p>)}{(event.sections ?? []).map((part: any) => <div><h3>{part.title}</h3><p>{part.body}</p></div>)}{event.sourceUrl && <p><a class="sourceLink" href={event.sourceUrl} target="_blank" rel="noreferrer">打开知乎原文</a></p>}</section>
+      <section><h2>{isContentCard ? "Card Content" : "About Event"}</h2>{(event.about ?? []).map((paragraph: string) => <p>{paragraph}</p>)}{(event.sections ?? []).map((part: any) => <div><h3>{part.title}</h3><p>{part.body}</p></div>)}{event.sourceUrl && <p><a class="sourceLink" href={event.sourceUrl} target="_blank" rel="noreferrer">打开来源</a></p>}</section>
       {!isContentCard && <EventLocationBlock name={event.locationName ?? event.venue} address={event.locationAddress ?? event.venue} />}
       <div class="ownership"><ShieldCheck size={17} /><span>归属 Agent {result.space.agent_id}</span><b>{result.card.visibility}</b></div>
     </article><aside>
-      {isContentCard ? <section class="contentPanel"><small>CONTENT CARD</small><h2>{event.contentType ?? event.category}</h2><p>此详情层同步自知乎来源卡，原文仍在知乎。</p>{event.sourceUrl && <a class="sourceLink" href={event.sourceUrl} target="_blank" rel="noreferrer">前往知乎</a>}</section> : <><EventRegistrationPanel eventSlug={event.slug} eventTitle={event.title} category={event.category} venue={event.locationName ?? event.venue} date={event.date} time={event.time} status={event.registrationStatus} note={event.registrationNote} action={event.registrationAction} priceLabel={event.priceLabel} /><EventOrganizerPanel presentedBy={event.presentedBy ?? event.host} /></>}
+      {isContentCard ? <section class="contentPanel"><small>CONTENT CARD</small><h2>{event.contentType ?? event.category}</h2><p>{event.cardKind === "zhihu_content" ? "此详情层同步自知乎来源卡，原文仍在知乎。" : "此详情层由可选插件生成，不提供活动报名。"}</p>{event.sourceUrl && <a class="sourceLink" href={event.sourceUrl} target="_blank" rel="noreferrer">查看来源</a>}</section> : <><EventRegistrationPanel eventSlug={event.slug} eventTitle={event.title} category={event.category} venue={event.locationName ?? event.venue} date={event.date} time={event.time} status={event.registrationStatus} note={event.registrationNote} action={event.registrationAction} priceLabel={event.priceLabel} /><EventOrganizerPanel presentedBy={event.presentedBy ?? event.host} /></>}
     </aside></div>
   </> : <section><h1>活动不存在</h1><p>该活动不属于当前 Agent Card 空间，或你无权访问。</p><a class="back" href="/events"><ArrowLeft size={17} />返回 Events</a></section>}
 </main></body></html>
